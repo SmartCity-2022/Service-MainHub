@@ -24,8 +24,9 @@ app.get('/users', (req, res) => {
 
 app.post('/api/register', async (req, res) => {
     try{
-        const hashedPassword = await bcrypt.hash(req.body.password, 10)
-        const user = { name: req.body.name, password: hashedPassword }
+        // const hashedPassword = await bcrypt.hash(req.body.passwort, 10)
+        // console.log("im here");
+        // const user = { name: req.body.name, passwort: hashedPassword }
         const values = [
             req.body.name,
             req.body.vorname,
@@ -36,14 +37,17 @@ app.post('/api/register', async (req, res) => {
             req.body.strasse,
             req.body.telefon
         ];
+
+
         const sql = "INSERT INTO `buerger` (name, vorname, username, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?,?);";
         con.query(sql, values, function (err, result) {
-            print("im here");
+
             if(err) return res.send({error: "Fehler beim Registrieren"});
             else res.send(result);
         });
+        console.log("im here");
 
-        res.sendStatus(201).send()
+        res.send(result)
     }catch{
         res.sendStatus(500)
     }
