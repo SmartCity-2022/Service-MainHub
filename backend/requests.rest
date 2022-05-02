@@ -27,3 +27,17 @@ Content-Type: application/json
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRmlubiIsImlhdCI6MTY1MTQ5OTAzMX0.yCRX0mLtxbQ62FedSqBcKbVVosZY-z4ji95gjjHekb4"
 }
+
+###
+
+GET http://localhost:4000/users
+
+###
+
+POST http://localhost:4000/api/register
+Content-Type: application/json
+
+{
+    "username": "Finn",
+    "password": "123"
+}
