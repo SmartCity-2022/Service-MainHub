@@ -39,11 +39,10 @@ app.post('/api/register', async (req, res) => {
         ];
 
 
+        user.push(values);
         const sql = "INSERT INTO `buerger` (name, vorname, username, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?,?);";
         con.query(sql, values, function (err, result) {
-
-            if(err) return res.send({error: "Fehler beim Registrieren"});
-            else res.send(result);
+            res.send(result);
         });
         console.log("im here");
 
