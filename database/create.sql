@@ -8,6 +8,7 @@ CREATE TABLE Buerger(
     postleitzahl int(5),
     strasse varchar(128),
     telefon varchar(64),
+	registrierungZeit timestamp DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
