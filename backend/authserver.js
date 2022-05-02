@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const jwt = require('jsonwebtoken')
+const mysql = require('mysql')
 const bcrypt = require('bcrypt')
 const con = mysql.createConnection(
     {host: "localhost", user: 'root', Password: "", database: "mainhub"}
@@ -25,8 +26,22 @@ app.post('/api/register', async (req, res) => {
     try{
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         const user = { name: req.body.name, password: hashedPassword }
-        //Datenbank
-        users.push(user)
+        const values = [
+            req.body.name,
+            req.body.vorname,
+            req.body.email,
+            req.body.passwort,
+            req.body.stadt,
+            req.body.postleitzahl,
+            req.body.strasse,
+            req.body.telefon
+        ];
+        const sql = "INSERT INTO `buerger` (name, vorname, username, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?,?);";
+        con.query(sql, values, function (err, result) {
+            print("im here");
+            if(err) return res.send({error: "Fehler beim Registrieren"});
+            else res.send(result);
+        });
 
         res.sendStatus(201).send()
     }catch{
