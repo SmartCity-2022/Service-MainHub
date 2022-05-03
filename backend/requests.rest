@@ -35,16 +35,15 @@ GET http://localhost:4000/users
 ###
 
 POST http://localhost:4000/api/register
-
 Content-Type: application/json
 
 {
-    "name": "memer",
-    "vorname": "hansi",
-    "email": "email@em.de",
+    "name": "memear",
+    "vorname": "hanasi",
+    "email": "emai22l@em.de",
     "passwort": "pw123",
     "stadt": "stadt1",
-    "postleitzahl": "00000",
+    "postleitzahl": 12234,
     "strasse": "strasse1",
     "telefon": "0123456"
 }

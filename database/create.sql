@@ -2,7 +2,7 @@ CREATE TABLE Buerger(
     id int NOT NULL AUTO_INCREMENT,
     name varchar(64),
     vorname varchar(64),
-    email varchar(64),
+    email varchar(64) UNIQUE,
     passwort varchar(64),
     stadt varchar(64),
     postleitzahl int(5),

@@ -24,29 +24,25 @@ app.get('/users', (req, res) => {
 
 app.post('/api/register', async (req, res) => {
     try{
-        // const hashedPassword = await bcrypt.hash(req.body.passwort, 10)
-        // console.log("im here");
-        // const user = { name: req.body.name, passwort: hashedPassword }
+        console.log(req.body)
+        const hashedPassword = await bcrypt.hash(req.body.passwort, 10)
         const values = [
             req.body.name,
             req.body.vorname,
             req.body.email,
-            req.body.passwort,
+            req.body.passwort = hashedPassword,
             req.body.stadt,
             req.body.postleitzahl,
             req.body.strasse,
             req.body.telefon
         ];
-
-
-        user.push(values);
-        const sql = "INSERT INTO `buerger` (name, vorname, username, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?,?);";
+        
+        const sql = "INSERT INTO `buerger` (name, vorname, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?);";
         con.query(sql, values, function (err, result) {
+            if (err) throw err;
             res.send(result);
         });
         console.log("im here");
-
-        res.send(result)
     }catch{
         res.sendStatus(500)
     }
