@@ -17,7 +17,7 @@ POST http://localhost:4000/api/token
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRmlubiIsImlhdCI6MTY1MTQ5OTAzMX0.yCRX0mLtxbQ62FedSqBcKbVVosZY-z4ji95gjjHekb4"
+    "token": "eyJhbGciOiJIUzI1NiJ9.ZW1haTIyNDQ0bEBlbS5kZQ.e1oCm2U6RZGUhsXLVRILqtcbm0RJ75t_ZT_0Zzwoa6I"
 }
 
 ###
@@ -26,7 +26,7 @@ DELETE http://localhost:4000/api/logout
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRmlubiIsImlhdCI6MTY1MTQ5OTAzMX0.yCRX0mLtxbQ62FedSqBcKbVVosZY-z4ji95gjjHekb4"
+    "token":  "eyJhbGciOiJIUzI1NiJ9.ZW1haTIyNDQ0bEBlbS5kZQ.e1oCm2U6RZGUhsXLVRILqtcbm0RJ75t_ZT_0Zzwoa6I"
 }
 
 ###
@@ -37,7 +37,7 @@ Content-Type: application/json
 {
     "name": "memear",
     "forename": "hanasi",
-    "email": "emai22444l@em.de",
+    "email": "eemailNEW2@em.de",
     "password": "pw123",
     "city": "stadt1",
     "postalCode": 12234,

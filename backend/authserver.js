@@ -35,11 +35,12 @@ app.post('/api/register', async (req, res) => {
             req.body.street,
             req.body.telefonNumber
         ];
-        
         const sql = "INSERT INTO `buerger` (name, vorname, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?);";
         con.query(sql, values, function (err, result) {
             if (err) throw err;
-            res.send(result);
+            const accessToken = getAccessToken(req.body.email)
+            const refreshToken = getRefreshToken(req.body.email)
+            res.json({ accessToken: accessToken, refreshToken: refreshToken })
         });
     }catch{
         res.sendStatus(500)
@@ -56,11 +57,8 @@ app.post('/api/login', async (req, res) => {
         userResult = result[0]
         try{
             if(await bcrypt.compare(req.body.password, userResult.passwort)){
-                const email = { email: req.body.email }
-                const accessToken = generateAccessToken(email)
-                const refreshToken = jwt.sign(email, process.env.REFRESH_TOKEN_SECRET)
-                refreshTokens.push(refreshToken)
-                console.log("in here")
+                const accessToken = getAccessToken(req.body.email)
+                const refreshToken = getRefreshToken(req.body.email)
                 res.json({ accessToken: accessToken, refreshToken: refreshToken })
             }else{
                 res.send('Failed to log in')
@@ -74,6 +72,13 @@ app.post('/api/login', async (req, res) => {
 
 app.delete('/api/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token != req.body.token)
+    const sql = "DELETE FROM accesstoken WHERE token = '" + req.body.token + "';";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        if (result.affectedRows === 0) {
+            console.log("No token found")
+        }
+    })
     res.sendStatus(204)
 })
 
@@ -88,5 +93,20 @@ app.post('/api/token', (req, res) => {
     })
 })
 
+function getAccessToken(userEmail) {
+    const email = { email: userEmail }
+    const accessToken = generateAccessToken(email)
+    return accessToken
+}
 
-
+function getRefreshToken(userEmail) {
+    const refreshToken = jwt.sign(userEmail, process.env.REFRESH_TOKEN_SECRET)
+    refreshTokens.push(refreshToken)
+    const sql = "INSERT INTO accesstoken (token) VALUES ('" + refreshToken + "');";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        if(result.length === 0) 
+        return res.sendStatus(500).send('Error on RefreshToken')
+    })
+    return refreshToken
+}
