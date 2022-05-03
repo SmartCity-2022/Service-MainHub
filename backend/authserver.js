@@ -24,17 +24,16 @@ app.get('/users', (req, res) => {
 
 app.post('/api/register', async (req, res) => {
     try{
-        console.log(req.body)
-        const hashedPassword = await bcrypt.hash(req.body.passwort, 10)
+        const hashedPassword = await bcrypt.hash(req.body.password, 10)
         const values = [
             req.body.name,
-            req.body.vorname,
+            req.body.forename,
             req.body.email,
-            req.body.passwort = hashedPassword,
-            req.body.stadt,
-            req.body.postleitzahl,
-            req.body.strasse,
-            req.body.telefon
+            req.body.password = hashedPassword,
+            req.body.city,
+            req.body.postalCode,
+            req.body.street,
+            req.body.telefonNumber
         ];
         
         const sql = "INSERT INTO `buerger` (name, vorname, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?);";
@@ -42,30 +41,35 @@ app.post('/api/register', async (req, res) => {
             if (err) throw err;
             res.send(result);
         });
-        console.log("im here");
     }catch{
         res.sendStatus(500)
     }
 })
 
 app.post('/api/login', async (req, res) => {
-    const user = users.find(user => user.username === req.body.username)
-    if (user == null) return res.sendStatus(400).send('Invalid username or password')
-    try{
-        if(await bcrypt.compare(req.body.password, user.password)){
-            res.send('Logged in')
-        }else{
-            res.send('Failed to log in')
+    const user = "SELECT buerger.passwort FROM buerger WHERE buerger.email = '" + req.body.email + "'";
+    let userResult
+    con.query(user, async function (err, result) {
+        if (err) throw err
+        if (result.length === 0) 
+        return res.sendStatus(400).send('Invalid email or password')
+        userResult = result[0]
+        try{
+            if(await bcrypt.compare(req.body.password, userResult.passwort)){
+                const email = { email: req.body.email }
+                const accessToken = generateAccessToken(email)
+                const refreshToken = jwt.sign(email, process.env.REFRESH_TOKEN_SECRET)
+                refreshTokens.push(refreshToken)
+                console.log("in here")
+                res.json({ accessToken: accessToken, refreshToken: refreshToken })
+            }else{
+                res.send('Failed to log in')
+            }
+        } catch {
+            res.status(500).send('Server error')
         }
-    } catch {
-        res.status(500).send('Server error')
-    }
-    console.log(req);
-    const username = req.body.username
-    const accessToken = generateAccessToken(user)
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-    refreshTokens.push(refreshToken)
-    res.json({ accessToken: accessToken, refreshToken: refreshToken })
+
+    });
 })
 
 app.delete('/api/logout', (req, res) => {

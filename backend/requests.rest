@@ -3,16 +3,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRmlubiIsI
 
 ###
 
-POST http://localhost:4000/login 
+POST http://localhost:4000/api/login 
 Content-Type: application/json
 
 {
-    "username": "Finn"
+    "email": "emai22444l@em.de",
+    "password": "pw123"
 }
 
 ### 
 
-POST http://localhost:4000/token
+POST http://localhost:4000/api/token
 Content-Type: application/json
 
 {
@@ -21,16 +22,12 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:4000/logout
+DELETE http://localhost:4000/api/logout
 Content-Type: application/json
 
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRmlubiIsImlhdCI6MTY1MTQ5OTAzMX0.yCRX0mLtxbQ62FedSqBcKbVVosZY-z4ji95gjjHekb4"
 }
-
-###
-
-GET http://localhost:4000/users
 
 ###
 
@@ -39,11 +36,11 @@ Content-Type: application/json
 
 {
     "name": "memear",
-    "vorname": "hanasi",
-    "email": "emai22l@em.de",
-    "passwort": "pw123",
-    "stadt": "stadt1",
-    "postleitzahl": 12234,
-    "strasse": "strasse1",
-    "telefon": "0123456"
+    "forename": "hanasi",
+    "email": "emai22444l@em.de",
+    "password": "pw123",
+    "city": "stadt1",
+    "postalCode": 12234,
+    "street": "strasse1",
+    "telefonNumber": "0123456"
 }
