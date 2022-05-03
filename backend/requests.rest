@@ -35,12 +35,12 @@ POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "name": "memear",
-    "forename": "hanasi",
-    "email": "eemailNEW2@em.de",
-    "password": "pw123",
-    "city": "stadt1",
-    "postalCode": 12234,
-    "street": "strasse1",
+    "name": "finn",
+    "forename": "finn",
+    "email": "finn@test.de",
+    "password": "test",
+    "city": "bielefeld",
+    "postalCode": 33613,
+    "street": "bremer straße",
     "telefonNumber": "0123456"
 }
