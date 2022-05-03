@@ -10,6 +10,12 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+#root {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
 .container {
   max-width: 500px;
   margin: 30px auto;

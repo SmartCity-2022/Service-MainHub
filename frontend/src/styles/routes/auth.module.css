@@ -1,0 +1,7 @@
+.wrapper {
+    width: 100%;
+    background-image: url("../../images/login.jpg");
+    object-fit: fill;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
