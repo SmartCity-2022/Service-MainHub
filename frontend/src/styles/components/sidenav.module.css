@@ -1,0 +1,15 @@
+.dropdownToggle { outline: 0; }
+  
+.navLink {
+    border-radius: 0;
+}
+
+.authElement {
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+}
+
+.authElement:hover {
+    color: #888;
+}
