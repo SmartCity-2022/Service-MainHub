@@ -4,8 +4,11 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
 const bcrypt = require('bcrypt')
-const con = mysql.createConnection(
-    {host: "localhost", user: 'root', Password: "", database: "mainhub"}
+const pool = mysql.createPool({
+    connectionLimit: 1000,
+    host: "localhost", 
+    user: 'root', Password: "", 
+    database: "mainhub"}
 );
 
 app.use(express.json())
@@ -44,7 +47,7 @@ app.post('/api/register', async (req, res) => {
             req.body.telefonNumber
         ];
         const sql = "INSERT INTO `buerger` (name, vorname, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?);";
-        con.query(sql, values, function (err, result) {
+        pool.query(sql, values, function (err, result) {
             if (err) throw err;
             const accessToken = getAccessToken(req.body.email)
             const refreshToken = getRefreshToken(req.body.email)
@@ -58,7 +61,7 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     const user = "SELECT buerger.passwort, buerger.email FROM buerger WHERE buerger.email = '" + req.body.email + "'";
     let userResult
-    con.query(user, async function (err, result) {
+    pool.query(user, async function (err, result) {
         if (err) throw err
         if (result.length === 0) 
         return res.sendStatus(400).send('Invalid email or password')
@@ -81,7 +84,7 @@ app.post('/api/login', async (req, res) => {
 app.delete('/api/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token != req.body.token)
     const sql = "DELETE FROM accesstoken WHERE token = '" + req.body.token + "';";
-    con.query(sql, function (err, result) {
+    pool.query(sql, function (err, result) {
         if (err) throw err;
         if (result.affectedRows === 0) {
             console.log("No token found")
@@ -111,7 +114,7 @@ function getRefreshToken(userEmail) {
     const refreshToken = jwt.sign(userEmail, process.env.REFRESH_TOKEN_SECRET)
     refreshTokens.push(refreshToken)
     const sql = "INSERT INTO accesstoken (token) VALUES ('" + refreshToken + "');";
-    con.query(sql, function (err, result) {
+    pool.query(sql, function (err, result) {
         if (err) throw err;
         if(result.length === 0) 
         return res.sendStatus(500).send('Error on RefreshToken')
