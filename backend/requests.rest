@@ -7,8 +7,8 @@ POST http://localhost:4000/api/login
 Content-Type: application/json
 
 {
-    "email": "emai22444l@em.de",
-    "password": "pw123"
+    "email": "finn@test.de",
+    "password": "test"
 }
 
 ### 
@@ -26,7 +26,7 @@ DELETE http://localhost:4000/api/logout
 Content-Type: application/json
 
 {
-    "token":  "eyJhbGciOiJIUzI1NiJ9.ZW1haTIyNDQ0bEBlbS5kZQ.e1oCm2U6RZGUhsXLVRILqtcbm0RJ75t_ZT_0Zzwoa6I"
+    "token":  "eyJhbGciOiJIUzI1NiJ9.ZmlubkB0ZXN0My5kZQ.cvrGMdjtSF_hD4awg5poqo899VoyHqNopaOi7KfBzDE"
 }
 
 ###
@@ -35,9 +35,9 @@ POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "name": "finn",
-    "forename": "finn",
-    "email": "finn@test.de",
+    "firstname": "finn",
+    "lastname": "finn",
+    "email": "email@me.de",
     "password": "test",
     "city": "bielefeld",
     "postalCode": 33613,

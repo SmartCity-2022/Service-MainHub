@@ -34,8 +34,8 @@ app.post('/api/register', async (req, res) => {
     try{
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         const values = [
-            req.body.name,
-            req.body.forename,
+            req.body.lastname,
+            req.body.firstname,
             req.body.email,
             req.body.password = hashedPassword,
             req.body.city,
@@ -56,7 +56,7 @@ app.post('/api/register', async (req, res) => {
 })
 
 app.post('/api/login', async (req, res) => {
-    const user = "SELECT buerger.passwort FROM buerger WHERE buerger.email = '" + req.body.email + "'";
+    const user = "SELECT buerger.passwort, buerger.email FROM buerger WHERE buerger.email = '" + req.body.email + "'";
     let userResult
     con.query(user, async function (err, result) {
         if (err) throw err
@@ -65,8 +65,8 @@ app.post('/api/login', async (req, res) => {
         userResult = result[0]
         try{
             if(await bcrypt.compare(req.body.password, userResult.passwort)){
-                const accessToken = getAccessToken(req.body.email)
-                const refreshToken = getRefreshToken(req.body.email)
+                const accessToken = getAccessToken(userResult.email)
+                const refreshToken = getRefreshToken(userResult.email)
                 res.json({ accessToken: accessToken, refreshToken: refreshToken })
             }else{
                 res.send('Failed to log in')
