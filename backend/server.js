@@ -4,10 +4,10 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
 const bcrypt = require('bcrypt')
+const HttpStatus = require('http-status');
 
 app.use(express.json())
 app.listen(4000)
-const HttpStatus = require('http-status');
 
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -46,7 +46,7 @@ app.post('/api/register', async (req, res) => {
         req.body.email,
         req.body.password = hashedPassword
     ];
-    const sql = "INSERT INTO `buerger` (email, passwort) VALUES (?,?);";
+    const sql = "INSERT INTO `buerger` (email, password) VALUES (?,?);";
     pool.query(sql, values, function (err, result) {
         if (err) return res.status(500).send('Error on Register');
         const accessToken = getAccessToken(req.body.email)
@@ -56,7 +56,7 @@ app.post('/api/register', async (req, res) => {
 })
 
 app.post('/api/login', async (req, res) => {
-    const user = "SELECT buerger.passwort, buerger.email FROM buerger WHERE buerger.email = '" + req.body.email + "'";
+    const user = "SELECT buerger.password, buerger.email FROM buerger WHERE buerger.email = '" + req.body.email + "'";
     let userResult
     pool.query(user, async function (err, result) {
         if (err) return res.status(500).send('Error on Login');
@@ -64,7 +64,7 @@ app.post('/api/login', async (req, res) => {
         return res.status(400).send('Invalid email or password')
         userResult = result[0]
         try{
-            if(await bcrypt.compare(req.body.password, userResult.passwort)){
+            if(await bcrypt.compare(req.body.password, userResult.password)){
                 const accessToken = getAccessToken(userResult.email)
                 const refreshToken = getRefreshToken(userResult.email)
                 res.json({ accessToken: accessToken, refreshToken: refreshToken })
