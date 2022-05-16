@@ -1,42 +1,37 @@
 import { Form, Button } from 'react-bootstrap'
 import { useState } from 'react'
+import { loginUser } from '../util/requests'
+import { ERR_INVALID_INPUT, ERR_USER_NOT_FOUND } from '../util/constants'
 
 const Login = () => {
 
     const [error, setError] = useState(false)
     const [data, setData] = useState({})
-    const [user, setUser] = useState({})
+    const [token, setToken] = useState({})
 
     const handleSubmit = async e => {
         e.preventDefault()
-        console.log(data)
 
         if(!data.email || !data.password) {
-            setError(true)
+            setError(ERR_INVALID_INPUT)
             return
         }
 
         const fetchedUser = await loginUser(data)
+
+        if(!fetchedUser)
+            setError(ERR_USER_NOT_FOUND)
+        else
+            setError(false)
         console.log(fetchedUser)
     }
 
-    const loginUser = async data => {
-        const fetchedUser = await fetch("http://localhost:4000/api/login", {
-            method: 'post',
-            headers: {
-                'Content-type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data),
-        })
-
-        return fetchedUser.json()
-    }
+    
 
     return (
         <Form onSubmit={(e) => handleSubmit(e)}>
             {error && <Form.Text className="text-danger mb-4">
-                Ungültige Kombination von Benutzername und Passwort!
+                {error}
             </Form.Text>}
             <Form.Group className="my-3" controlId="formBasicEmail">
                 <Form.Label>E-mail Addresse</Form.Label>
