@@ -4,15 +4,10 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
 const bcrypt = require('bcrypt')
-const pool = mysql.createPool({
-    connectionLimit: 1000,
-    host: "localhost", 
-    user: 'root', Password: "", 
-    database: "mainhub"}
-);
 
 app.use(express.json())
 app.listen(4000)
+const HttpStatus = require('http-status');
 
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,6 +17,13 @@ app.use(function(req, res, next) {
     next();
 });
 
+const pool = mysql.createPool({
+    connectionLimit: 1000,
+    host: "localhost", 
+    user: 'root', Password: "", 
+    database: "mainhub"}
+);
+
 let refreshTokens = []
 const users = []
 
@@ -29,42 +31,37 @@ const generateAccessToken = user => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
 }
 
-app.get('/users', (req, res) => {
-    res.json(users)
+app.get('/users', async (req, res) => {
+    try {
+        res.json(users)
+    } 
+    catch (err) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: err, message: err.message }); // 500
+    }
 })
 
 app.post('/api/register', async (req, res) => {
-    try{
-        const hashedPassword = await bcrypt.hash(req.body.password, 10)
-        const values = [
-            req.body.lastname,
-            req.body.firstname,
-            req.body.email,
-            req.body.password = hashedPassword,
-            req.body.city,
-            req.body.postalCode,
-            req.body.street,
-            req.body.telefonNumber
-        ];
-        const sql = "INSERT INTO `buerger` (name, vorname, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?);";
-        pool.query(sql, values, function (err, result) {
-            if (err) throw err;
-            const accessToken = getAccessToken(req.body.email)
-            const refreshToken = getRefreshToken(req.body.email)
-            res.json({ accessToken: accessToken, refreshToken: refreshToken })
-        });
-    }catch{
-        res.sendStatus(500)
-    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const values = [
+        req.body.email,
+        req.body.password = hashedPassword
+    ];
+    const sql = "INSERT INTO `buerger` (email, passwort) VALUES (?,?);";
+    pool.query(sql, values, function (err, result) {
+        if (err) return res.status(500).send('Error on Register');
+        const accessToken = getAccessToken(req.body.email)
+        const refreshToken = getRefreshToken(req.body.email)
+        res.json({ accessToken: accessToken, refreshToken: refreshToken })
+    });
 })
 
 app.post('/api/login', async (req, res) => {
     const user = "SELECT buerger.passwort, buerger.email FROM buerger WHERE buerger.email = '" + req.body.email + "'";
     let userResult
     pool.query(user, async function (err, result) {
-        if (err) throw err
+        if (err) return res.status(500).send('Error on Login');
         if (result.length === 0) 
-        return res.sendStatus(400).send('Invalid email or password')
+        return res.status(400).send('Invalid email or password')
         userResult = result[0]
         try{
             if(await bcrypt.compare(req.body.password, userResult.passwort)){
@@ -85,7 +82,7 @@ app.delete('/api/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token != req.body.token)
     const sql = "DELETE FROM accesstoken WHERE token = '" + req.body.token + "';";
     pool.query(sql, function (err, result) {
-        if (err) throw err;
+        if (err) return res.status(500).send('Error on Delete');
         if (result.affectedRows === 0) {
             console.log("No token found")
         }
