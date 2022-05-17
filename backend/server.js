@@ -4,46 +4,42 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
 const bcrypt = require('bcrypt')
-const HttpStatus = require('http-status');
 const amqp = require("amqplib/callback_api");
 const constants = require('./constants.js')
+const config = require('./config.js')
+var cors = require('cors');
 
 app.use(express.json())
-app.listen(4000)
+app.listen(config.BACKEND_PORT)
 
 let amqpConn
 let amqpChannel
 
-app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
+app.use(cors({
+    origin: config.FRONTEND_DOMAIN
+}));
+
+// app.use(function(req, res, next) {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     next();
+// });
 
 const pool = mysql.createPool({
-    connectionLimit: 1000,
-    host: "localhost", 
-    user: 'root', Password: "", 
-    database: "mainhub"}
-);
+    connectionLimit : config.DATABASE_CONNECTION_LIMIT,
+    host            : config.DATABASE_HOST, 
+    user            : config.DATABASE_USER,
+    Password        : config.DATABASE_PASSWORD, 
+    database        : config.DATABASE_NAME
+});
 
 let refreshTokens = []
-const users = []
 
 const generateAccessToken = user => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
 }
-
-app.get('/users', async (req, res) => {
-    try {
-        res.json(users)
-    } 
-    catch (err) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: err, message: err.message }); // 500
-    }
-})
 
 app.post('/api/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
@@ -58,10 +54,12 @@ app.post('/api/register', async (req, res) => {
                 return res.status(400).send({errMsg: constants.ERR_DUPLICATE_ENTRY});
             return res.status(500).send({msg: err});
         }
+
         const accessToken = getAccessToken(req.body.email)
         const refreshToken = getRefreshToken(req.body.email)
         const data = { accessToken: accessToken, refreshToken: refreshToken };
-        amqpChannel.publish("mainhub", "service.mainhub.register", Buffer.from(JSON.stringify(data))); 
+
+        amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_REGISTER, Buffer.from(JSON.stringify(data))); 
         res.json(data)
     });
 })
@@ -81,7 +79,7 @@ app.post('/api/login', async (req, res) => {
                 const accessToken = getAccessToken(userResult.email)
                 const refreshToken = getRefreshToken(userResult.email)
                 const data = { accessToken: accessToken, refreshToken: refreshToken };
-                amqpChannel.publish("mainhub", "service.mainhub.login", Buffer.from(JSON.stringify(data))); 
+                amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGIN, Buffer.from(JSON.stringify(data))); 
                 res.json(data)
             }else{
                 res.send('Failed to log in')
@@ -97,12 +95,12 @@ app.delete('/api/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token != req.body.token)
     const sql = "DELETE FROM RefreshToken WHERE token = '" + req.body.token + "';";
     pool.query(sql, function (err, result) {
-        if (err) return res.status(500).send('Error on Delete');
+        if (err) return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
         if (result.affectedRows === 0) {
-            console.log("No token found")
+            return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
         }
         const data = {msg: "logout"};
-        amqpChannel.publish("mainhub", "service.mainhub.register", Buffer.from(JSON.stringify(data))); 
+        amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGOUT, Buffer.from(JSON.stringify(data))); 
         res.json(data).status(204)
     })
 })
@@ -129,14 +127,12 @@ function getRefreshToken(userEmail) {
     refreshTokens.push(refreshToken)
     const sql = "INSERT INTO RefreshToken (token) VALUES ('" + refreshToken + "');";
     pool.query(sql, function (err, result) {
-        if (err) return res.status(500).send('Error on Insert');
-        if (result.affectedRows === 0) {
-        }
+        if(err) console.log(err)
     })
     return refreshToken
 }
 
-const authToken = (req, res, next) => {
+/*const authToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -147,15 +143,15 @@ const authToken = (req, res, next) => {
         req.user = user
         next()
     })
-}
+}*/
 
-amqp.connect("amqp://guest:guest@127.0.0.1:5672", function(error0, connection) {
+amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${config.RABBIT_MQ_DOMAIN}:${config.RABBIT_MQ_PORT}`, function(error0, connection) {
     if(error0) throw error0;
     amqpConn = connection 
 
     connection.createChannel(function(error1, channel) { 
         if(error1) throw error1;
-        channel.assertExchange("mainhub", "topic", {durable: false}); 
+        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: false}); 
         amqpChannel = channel 
     });
 });
