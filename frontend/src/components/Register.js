@@ -29,7 +29,7 @@ const Register = ({ setLoggedIn }) => {
         else {
             setError(false)
             setLoggedIn(true)
-            localStorage.setItem("tokens", res)
+            localStorage.setItem("tokens", JSON.stringify(res))
         }
 
         console.log(res)

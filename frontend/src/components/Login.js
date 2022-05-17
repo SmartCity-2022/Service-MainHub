@@ -1,7 +1,7 @@
 import { Form, Button } from 'react-bootstrap'
 import { useState } from 'react'
 import { loginUser } from '../util/requests'
-import { ERR_INVALID_INPUT, ERR_USER_NOT_FOUND } from '../util/constants'
+import { ERR_INVALID_INPUT } from '../util/constants'
 import styles from '../styles/components/auth.module.css';
 
 const Login = ({ setLoggedIn }) => {
@@ -23,7 +23,7 @@ const Login = ({ setLoggedIn }) => {
         else {
             setError(false)
             setLoggedIn(true)
-            localStorage.setItem("tokens", res)
+            localStorage.setItem("tokens", JSON.stringify(res))
         }
 
         console.log(res);

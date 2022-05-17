@@ -2,11 +2,20 @@ import styles from '../styles/components/sidenav.module.css';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { Link } from 'react-router-dom';
 import services from '../config/services.json';
+import { logoutUser } from '../util/requests';
 
-const SideNav = ({ loggedIn }) => {
+const SideNav = ({ loggedIn, setLoggedIn }) => {
 
     const logout = () => {
+        const tokenString = localStorage.getItem("tokens")
+
+        if(tokenString) {
+            const tokens = JSON.parse(tokenString)
+            logoutUser({token: tokens.refreshToken})
+        }
+        
         localStorage.removeItem("tokens")
+        setLoggedIn(false)
     }
 
     return (
@@ -29,7 +38,7 @@ const SideNav = ({ loggedIn }) => {
                 <li className={`mb-1 link-dark`}>
                     {
                         loggedIn 
-                            ? <span onClkick={logout} className={styles.authElement}>Logout</span> 
+                            ? <span onClick={logout} className={styles.authElement}>Logout</span> 
                             : <Link to="/auth" className={styles.authElement}>Login / Register</Link> 
                     }
                     
