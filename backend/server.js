@@ -5,9 +5,14 @@ const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
 const bcrypt = require('bcrypt')
 const HttpStatus = require('http-status');
+const amqp = require("amqplib/callback_api");
 
 app.use(express.json())
 app.listen(4000)
+
+let amqpConn
+let amqpChannel
+
 
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,10 +53,12 @@ app.post('/api/register', async (req, res) => {
     ];
     const sql = "INSERT INTO `buerger` (email, password) VALUES (?,?);";
     pool.query(sql, values, function (err, result) {
-        if (err) return res.status(500).send('Error on Register');
+        if (err) return res.status(500).send({msg: err});
         const accessToken = getAccessToken(req.body.email)
         const refreshToken = getRefreshToken(req.body.email)
-        res.json({ accessToken: accessToken, refreshToken: refreshToken })
+        const data = { accessToken: accessToken, refreshToken: refreshToken };
+        amqpChannel.publish("mainhub", "service.mainhub.register", Buffer.from(JSON.stringify(data))); 
+        res.json(data)
     });
 })
 
@@ -67,7 +74,9 @@ app.post('/api/login', async (req, res) => {
             if(await bcrypt.compare(req.body.password, userResult.password)){
                 const accessToken = getAccessToken(userResult.email)
                 const refreshToken = getRefreshToken(userResult.email)
-                res.json({ accessToken: accessToken, refreshToken: refreshToken })
+                const data = { accessToken: accessToken, refreshToken: refreshToken };
+                amqpChannel.publish("mainhub", "service.mainhub.login", Buffer.from(JSON.stringify(data))); 
+                res.json(data)
             }else{
                 res.send('Failed to log in')
             }
@@ -86,6 +95,9 @@ app.delete('/api/logout', (req, res) => {
         if (result.affectedRows === 0) {
             console.log("No token found")
         }
+        const data = {msg: "logout"};
+        amqpChannel.publish("mainhub", "service.mainhub.register", Buffer.from(JSON.stringify(data))); 
+        res.json(data)
     })
     res.sendStatus(204)
 })
@@ -132,19 +144,18 @@ const authToken = (req, res, next) => {
     })
 }
 
-// const posts = [
-//     {
-//         username: 'Justin',
-//         title: 'Richtig toller Post'
-//     }, {
-//         username: 'Paddy',
-//         title: 'I ♥ react'
-//     }, {
-//         username: 'Finn',
-//         title: 'Noch ein toller Post'
-//     }
-// ]
+amqp.connect("amqp://guest:guest@127.0.0.1:5672", function(error0, connection) {
+    if(error0) throw error0;
+    amqpConn = connection 
 
-// app.get('/posts', authToken, (req, res) => {
-//     res.json(posts.filter(post => post.username === req.user.name))
-// })
+    connection.createChannel(function(error1, channel) { 
+        if(error1) throw error1;
+        channel.assertExchange("mainhub", "topic", {durable: false}); 
+        amqpChannel = channel 
+    });
+});
+
+process.on("SIGINT", () => {
+    if(amqpConn) amqpConn.close();
+    process.exit(0);
+});
