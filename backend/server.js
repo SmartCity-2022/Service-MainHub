@@ -6,13 +6,13 @@ const mysql = require('mysql')
 const bcrypt = require('bcrypt')
 const HttpStatus = require('http-status');
 const amqp = require("amqplib/callback_api");
+const constants = require('./constants.js')
 
 app.use(express.json())
 app.listen(4000)
 
 let amqpConn
 let amqpChannel
-
 
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -53,7 +53,11 @@ app.post('/api/register', async (req, res) => {
     ];
     const sql = "INSERT INTO `buerger` (email, password) VALUES (?,?);";
     pool.query(sql, values, function (err, result) {
-        if (err) return res.status(500).send({msg: err});
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY')
+                return res.status(400).send({errMsg: constants.ERR_DUPLICATE_ENTRY});
+            return res.status(500).send({msg: err});
+        }
         const accessToken = getAccessToken(req.body.email)
         const refreshToken = getRefreshToken(req.body.email)
         const data = { accessToken: accessToken, refreshToken: refreshToken };
@@ -66,9 +70,11 @@ app.post('/api/login', async (req, res) => {
     const user = "SELECT buerger.password, buerger.email FROM buerger WHERE buerger.email = '" + req.body.email + "'";
     let userResult
     pool.query(user, async function (err, result) {
-        if (err) return res.status(500).send('Error on Login');
+        if (err) {
+            return res.status(500).send('Server Eror on Login');
+        }
         if (result.length === 0) 
-        return res.status(400).send('Invalid email or password')
+        return res.status(400).send({errMsg: constants.ERR_INVALID_EMAIL_PASSWORD})
         userResult = result[0]
         try{
             if(await bcrypt.compare(req.body.password, userResult.password)){
@@ -97,17 +103,16 @@ app.delete('/api/logout', (req, res) => {
         }
         const data = {msg: "logout"};
         amqpChannel.publish("mainhub", "service.mainhub.register", Buffer.from(JSON.stringify(data))); 
-        res.json(data)
+        res.json(data).status(204)
     })
-    res.sendStatus(204)
 })
 
 app.post('/api/token', (req, res) => {
     const refreshToken = req.body.token
-    if(refreshToken == null) return res.sendStatus(401)
-    if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
+    if(refreshToken == null) return res.status(401).send({errMsg:  constants.ERR_MISSING_TOKEN})
+    if(!refreshTokens.includes(refreshToken)) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-        if(err) return res.sendStatus(403)
+        if(err) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
         const accessToken = generateAccessToken({ name: user.name })
         return res.json({ accessToken: accessToken })
     })
@@ -124,9 +129,9 @@ function getRefreshToken(userEmail) {
     refreshTokens.push(refreshToken)
     const sql = "INSERT INTO RefreshToken (token) VALUES ('" + refreshToken + "');";
     pool.query(sql, function (err, result) {
-        if (err) throw err;
-        if(result.length === 0) 
-        return res.sendStatus(500).send('Error on RefreshToken')
+        if (err) return res.status(500).send('Error on Insert');
+        if (result.affectedRows === 0) {
+        }
     })
     return refreshToken
 }
