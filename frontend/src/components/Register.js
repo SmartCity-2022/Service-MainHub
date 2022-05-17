@@ -1,14 +1,13 @@
 import { Form, Button } from 'react-bootstrap'
 import { useState } from 'react'
 import { registerUser } from '../util/requests'
-import { ERR_EMAIL_USED, ERR_INVALID_INPUT, ERR_USER_NOT_FOUND, ERR_WRONG_PASS_REPEAT } from '../util/constants'
+import { ERR_INVALID_INPUT, ERR_USER_NOT_FOUND, ERR_WRONG_PASS_REPEAT } from '../util/constants'
 import styles from '../styles/components/auth.module.css';
 
-const Register = () => {
+const Register = ({ setLoggedIn }) => {
 
     const [error, setError] = useState(false)
     const [data, setData] = useState({})
-    const [token, setToken] = useState({})
 
     const handleSubmit = async e => {
         e.preventDefault()
@@ -23,14 +22,17 @@ const Register = () => {
             return
         }
 
-        const token = await registerUser(data)
+        const res = await registerUser(data)
 
-        if(!token)
-            setError(ERR_USER_NOT_FOUND)
-        else
+        if(res.errMsg)
+            setError(res.errMsg)
+        else {
             setError(false)
+            setLoggedIn(true)
+            localStorage.setItem("tokens", res)
+        }
 
-        console.log(token)
+        console.log(res)
     }
 
     

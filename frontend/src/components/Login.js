@@ -4,11 +4,9 @@ import { loginUser } from '../util/requests'
 import { ERR_INVALID_INPUT, ERR_USER_NOT_FOUND } from '../util/constants'
 import styles from '../styles/components/auth.module.css';
 
-const Login = () => {
-
+const Login = ({ setLoggedIn }) => {
     const [error, setError] = useState(false)
     const [data, setData] = useState({})
-    const [token, setToken] = useState({})
 
     const handleSubmit = async e => {
         e.preventDefault()
@@ -18,16 +16,18 @@ const Login = () => {
             return
         }
 
-        const fetchedUser = await loginUser(data)
+        const res = await loginUser(data)
 
-        if(!fetchedUser)
-            setError(ERR_USER_NOT_FOUND)
-        else
+        if(res.errMsg)
+            setError(res.errMsg)
+        else {
             setError(false)
-        console.log(fetchedUser)
-    }
+            setLoggedIn(true)
+            localStorage.setItem("tokens", res)
+        }
 
-    
+        console.log(res);
+    }
 
     return (
         <Form onSubmit={(e) => handleSubmit(e)}>
