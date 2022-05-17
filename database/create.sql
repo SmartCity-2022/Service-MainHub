@@ -8,7 +8,7 @@ CREATE TABLE Buerger(
 CREATE TABLE Log(
     id int NOT NULL AUTO_INCREMENT,
     buerger_id int NOT NULL,
-    loginZeit timestamp DEFAULT CURRENT_TIMESTAMP,
+    loginDate timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (buerger_id) REFERENCES Buerger(id),
     PRIMARY KEY (id)
 );
