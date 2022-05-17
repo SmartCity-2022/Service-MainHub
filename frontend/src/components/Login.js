@@ -25,8 +25,6 @@ const Login = ({ setLoggedIn }) => {
             setLoggedIn(true)
             localStorage.setItem("tokens", JSON.stringify(res))
         }
-
-        console.log(res);
     }
 
     return (
