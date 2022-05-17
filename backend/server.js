@@ -89,7 +89,7 @@ app.post('/api/login', async (req, res) => {
 
 app.delete('/api/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token != req.body.token)
-    const sql = "DELETE FROM accesstoken WHERE token = '" + req.body.token + "';";
+    const sql = "DELETE FROM RefreshToken WHERE token = '" + req.body.token + "';";
     pool.query(sql, function (err, result) {
         if (err) return res.status(500).send('Error on Delete');
         if (result.affectedRows === 0) {
@@ -122,7 +122,7 @@ function getAccessToken(userEmail) {
 function getRefreshToken(userEmail) {
     const refreshToken = jwt.sign(userEmail, process.env.REFRESH_TOKEN_SECRET)
     refreshTokens.push(refreshToken)
-    const sql = "INSERT INTO accesstoken (token) VALUES ('" + refreshToken + "');";
+    const sql = "INSERT INTO RefreshToken (token) VALUES ('" + refreshToken + "');";
     pool.query(sql, function (err, result) {
         if (err) throw err;
         if(result.length === 0) 

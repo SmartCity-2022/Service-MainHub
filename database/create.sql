@@ -13,7 +13,7 @@ CREATE TABLE Log(
     PRIMARY KEY (id)
 );
 
-CREATE TABLE AccessToken(
+CREATE TABLE RefreshToken(
     id int NOT NULL AUTO_INCREMENT,
     Token varchar(255),
     PRIMARY KEY (id)
