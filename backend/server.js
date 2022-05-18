@@ -4,72 +4,88 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
 const bcrypt = require('bcrypt')
-const con = mysql.createConnection(
-    {host: "localhost", user: 'root', Password: "", database: "mainhub"}
-);
+const amqp = require("amqplib/callback_api");
+const constants = require('./constants.js')
+const config = require('./config.js')
+var cors = require('cors');
 
 app.use(express.json())
-app.listen(4000)
+app.listen(config.BACKEND_PORT)
 
-app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
+let amqpConn
+let amqpChannel
+
+app.use(cors({
+    origin: config.FRONTEND_DOMAIN
+}));
+
+// app.use(function(req, res, next) {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     next();
+// });
+
+const pool = mysql.createPool({
+    connectionLimit : config.DATABASE_CONNECTION_LIMIT,
+    host            : config.DATABASE_HOST, 
+    user            : config.DATABASE_USER,
+    Password        : config.DATABASE_PASSWORD, 
+    database        : config.DATABASE_NAME
 });
 
 let refreshTokens = []
-const users = []
 
 const generateAccessToken = user => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
 }
 
-app.get('/users', (req, res) => {
-    res.json(users)
-})
-
 app.post('/api/register', async (req, res) => {
-    try{
-        const hashedPassword = await bcrypt.hash(req.body.password, 10)
-        const values = [
-            req.body.name,
-            req.body.forename,
-            req.body.email,
-            req.body.password = hashedPassword,
-            req.body.city,
-            req.body.postalCode,
-            req.body.street,
-            req.body.telefonNumber
-        ];
-        const sql = "INSERT INTO `buerger` (name, vorname, email, passwort, stadt, postleitzahl, strasse, telefon) VALUES (?,?,?,?,?,?,?,?);";
-        con.query(sql, values, function (err, result) {
-            if (err) throw err;
-            const accessToken = getAccessToken(req.body.email)
-            const refreshToken = getRefreshToken(req.body.email)
-            res.json({ accessToken: accessToken, refreshToken: refreshToken })
-        });
-    }catch{
-        res.sendStatus(500)
-    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const values = [
+        req.body.email,
+        req.body.password = hashedPassword
+    ];
+    const sql = "INSERT INTO `buerger` (email, password) VALUES (?,?);";
+    pool.query(sql, values, function (err, result) {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY')
+                return res.status(400).send({errMsg: constants.ERR_DUPLICATE_ENTRY});
+            return res.status(500).send({msg: err});
+        }
+
+        const accessToken = getAccessToken(req.body.email)
+        const refreshToken = getRefreshToken(req.body.email)
+        const data = { accessToken: accessToken, refreshToken: refreshToken };
+
+        amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_REGISTER, Buffer.from(JSON.stringify(data))); 
+        res.json(data)
+    });
 })
 
 app.post('/api/login', async (req, res) => {
-    const user = "SELECT buerger.passwort FROM buerger WHERE buerger.email = '" + req.body.email + "'";
+    const values = [
+        req.body.email
+    ];
+    const sql = "SELECT buerger.password, buerger.email FROM buerger WHERE buerger.email = ?";
     let userResult
-    con.query(user, async function (err, result) {
-        if (err) throw err
+    pool.query(sql, values, async function (err, result) {
+        if (err) {
+            return res.status(500).send('Server Eror on Login');
+        }
         if (result.length === 0) 
-        return res.sendStatus(400).send('Invalid email or password')
+        return res.status(400).send({errMsg: constants.ERR_INVALID_EMAIL_PASSWORD})
         userResult = result[0]
         try{
-            if(await bcrypt.compare(req.body.password, userResult.passwort)){
-                const accessToken = getAccessToken(req.body.email)
-                const refreshToken = getRefreshToken(req.body.email)
-                res.json({ accessToken: accessToken, refreshToken: refreshToken })
+            if(await bcrypt.compare(req.body.password, userResult.password)){
+                const accessToken = getAccessToken(userResult.email)
+                const refreshToken = getRefreshToken(userResult.email)
+                const data = { accessToken: accessToken, refreshToken: refreshToken };
+                amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGIN, Buffer.from(JSON.stringify(data))); 
+                res.json(data)
             }else{
-                res.send('Failed to log in')
+                res.status(400).send({errMsg: constants.ERR_INVALID_PASSWORD})
             }
         } catch {
             res.status(500).send('Server error')
@@ -80,22 +96,27 @@ app.post('/api/login', async (req, res) => {
 
 app.delete('/api/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token != req.body.token)
-    const sql = "DELETE FROM accesstoken WHERE token = '" + req.body.token + "';";
-    con.query(sql, function (err, result) {
-        if (err) throw err;
+    const values = [
+        req.body.token
+    ];
+    const sql = "DELETE FROM RefreshToken WHERE token = ?";
+    pool.query(sql, values, function (err, result) {
+        if (err) return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
         if (result.affectedRows === 0) {
-            console.log("No token found")
+            return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
         }
+        const data = {msg: "logout"};
+        amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGOUT, Buffer.from(JSON.stringify(data))); 
+        res.json(data).status(204)
     })
-    res.sendStatus(204)
 })
 
 app.post('/api/token', (req, res) => {
     const refreshToken = req.body.token
-    if(refreshToken == null) return res.sendStatus(401)
-    if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
+    if(refreshToken == null) return res.status(401).send({errMsg:  constants.ERR_MISSING_TOKEN})
+    if(!refreshTokens.includes(refreshToken)) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-        if(err) return res.sendStatus(403)
+        if(err) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
         const accessToken = generateAccessToken({ name: user.name })
         return res.json({ accessToken: accessToken })
     })
@@ -110,16 +131,17 @@ function getAccessToken(userEmail) {
 function getRefreshToken(userEmail) {
     const refreshToken = jwt.sign(userEmail, process.env.REFRESH_TOKEN_SECRET)
     refreshTokens.push(refreshToken)
-    const sql = "INSERT INTO accesstoken (token) VALUES ('" + refreshToken + "');";
-    con.query(sql, function (err, result) {
-        if (err) throw err;
-        if(result.length === 0) 
-        return res.sendStatus(500).send('Error on RefreshToken')
+    const values = [
+        refreshToken
+    ];
+    const sql = "INSERT INTO RefreshToken (token) VALUES (?);";
+    pool.query(sql, values, function (err, result) {
+        if(err) console.log(err)
     })
     return refreshToken
 }
 
-const authToken = (req, res, next) => {
+/*const authToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -130,21 +152,20 @@ const authToken = (req, res, next) => {
         req.user = user
         next()
     })
-}
+}*/
 
-// const posts = [
-//     {
-//         username: 'Justin',
-//         title: 'Richtig toller Post'
-//     }, {
-//         username: 'Paddy',
-//         title: 'I ♥ react'
-//     }, {
-//         username: 'Finn',
-//         title: 'Noch ein toller Post'
-//     }
-// ]
+amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${config.RABBIT_MQ_DOMAIN}:${config.RABBIT_MQ_PORT}`, function(error0, connection) {
+    if(error0) throw error0;
+    amqpConn = connection 
 
-// app.get('/posts', authToken, (req, res) => {
-//     res.json(posts.filter(post => post.username === req.user.name))
-// })
+    connection.createChannel(function(error1, channel) { 
+        if(error1) throw error1;
+        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: false}); 
+        amqpChannel = channel 
+    });
+});
+
+process.on("SIGINT", () => {
+    if(amqpConn) amqpConn.close();
+    process.exit(0);
+});

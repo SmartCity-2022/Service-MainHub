@@ -1,19 +1,21 @@
 import styles from './styles/app.module.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './routes/Auth';
-import Test from './routes/Test';
+import Service from './routes/Service';
 import SideNav from './components/SideNav';
+import { useState } from 'react';
 
 function App() {
+    const [loggedIn, setLoggedIn] = useState(false);
+
     return (
         <div className={styles.wrapper}>
             <Router>
-                <SideNav />
+                <SideNav loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
                 <div className={ styles.contentWrapper }>
                     <Routes>
-                        <Route path="/" element={<Test />} />
-                        <Route path="/auth" element={<Auth />} />
-                        <Route path="/test" element={<Test />} />
+                        <Route path="/" element={<Service />} />
+                        <Route path="/auth" element={<Auth setLoggedIn={setLoggedIn} />} />
                     </Routes>
                 </div>
             </Router>
