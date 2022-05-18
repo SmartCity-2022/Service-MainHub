@@ -132,7 +132,30 @@ function getRefreshToken(userEmail) {
     return refreshToken
 }
 
-/*const authToken = (req, res, next) => {
+app.post('/api/validatetoken', (req, res) => {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if(token == null) return res.json({isValid: false})
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if(err) return res.json({isValid: false})
+        return res.json({isValid: true})
+    })
+})
+
+// =========================================================================================
+
+/*const exampleData = [
+    { author: "testUser", title: "first post", id: 1 },
+    { author: "testUser", title: "toller post", id: 2 },
+    { author: "Paddy", title: "richtig toller post", id: 3 },
+    { author: "Justin", title: "super post", id: 4 },
+    { author: "Finn", title: "super duper post", id: 5 },
+    { author: "testUser", title: "cooler post", id: 6 },
+];
+
+const authToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -143,7 +166,14 @@ function getRefreshToken(userEmail) {
         req.user = user
         next()
     })
-}*/
+}
+
+app.get('/api/posts/:id', authToken, (req, res) => {
+    console.log(req.params.id)
+    res.json(exampleData.filter(data => data.id = req.params.id))
+})*/
+
+// =========================================================================================
 
 amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${config.RABBIT_MQ_DOMAIN}:${config.RABBIT_MQ_PORT}`, function(error0, connection) {
     if(error0) throw error0;
