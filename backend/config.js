@@ -15,5 +15,6 @@ module.exports = Object.freeze({
     RABBIT_MQ_DOMAIN                : "127.0.0.1",
     RABBIT_MQ_PORT                  : 5672,
     RABBIT_MQ_USER                  : "guest",
-    RABBIT_MQ_PASSWORD              : "guest"
+    RABBIT_MQ_PASSWORD              : "guest",
+    CITIZEN_PORTAL_API_EMAIL_EXISTS : "http://localhost:5000/verify/"
 });

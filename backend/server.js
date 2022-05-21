@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 const amqp = require("amqplib/callback_api");
 const constants = require('./constants.js')
 const config = require('./config.js')
+const axios = require('axios');
 var cors = require('cors');
 
 app.use(express.json())
@@ -34,6 +35,18 @@ const generateAccessToken = user => {
 }
 
 app.post('/api/register', async (req, res) => {
+
+    let exists = true
+    axios
+        .get(config.CITIZEN_PORTAL_API_EMAIL_EXISTS)
+        .then(resp => {
+            if(!resp.data.exists) 
+                exists = false
+        })
+
+    if(!exists)
+        return res.status(400).send({msg: "Sie müssen sich erst als Bürger im Bürgeramt melden!"});
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const values = [
         req.body.email,
