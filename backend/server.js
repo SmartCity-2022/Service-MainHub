@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 const amqp = require("amqplib/callback_api");
 const constants = require('./constants.js')
 const config = require('./config.js')
+const axios = require('axios');
 var cors = require('cors');
 
 app.use(express.json())
@@ -19,19 +20,11 @@ app.use(cors({
     origin: config.FRONTEND_DOMAIN
 }));
 
-// app.use(function(req, res, next) {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//     next();
-// });
-
 const pool = mysql.createPool({
     connectionLimit : config.DATABASE_CONNECTION_LIMIT,
     host            : config.DATABASE_HOST, 
     user            : config.DATABASE_USER,
-    Password        : config.DATABASE_PASSWORD, 
+    password        : config.DATABASE_PASSWORD, 
     database        : config.DATABASE_NAME
 });
 
@@ -42,12 +35,31 @@ const generateAccessToken = user => {
 }
 
 app.post('/api/register', async (req, res) => {
+
+    let exists = false
+
+    try {
+        await axios
+            .post(config.CITIZEN_PORTAL_API_EMAIL_EXISTS, {
+                email: req.body.email,
+            })
+            .then(resp => {
+                if(resp.data.exists) 
+                    exists = true
+            })
+    } catch (error) {
+        console.log(error)
+    }
+
+    if(!exists)
+            return res.status(400).send({errMsg: "Sie müssen sich erst als Bürger im Bürgeramt melden!"});
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const values = [
         req.body.email,
         req.body.password = hashedPassword
     ];
-    const sql = "INSERT INTO `buerger` (email, password) VALUES (?,?);";
+    const sql = "INSERT INTO `Buerger` (email, password) VALUES (?,?);";
     pool.query(sql, values, function (err, result) {
         if (err) {
             if (err.code === 'ER_DUP_ENTRY')
@@ -154,14 +166,27 @@ function getRefreshToken(userEmail) {
     })
 }*/
 
+
 amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${config.RABBIT_MQ_DOMAIN}:${config.RABBIT_MQ_PORT}`, function(error0, connection) {
     if(error0) throw error0;
     amqpConn = connection 
 
     connection.createChannel(function(error1, channel) { 
         if(error1) throw error1;
-        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: false}); 
+        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: true}); 
         amqpChannel = channel 
+
+        channel.assertQueue("", { exclusive: true }, (error2, queueInstance) => {
+            if(error2) throw error2;
+
+            channel.bindQueue(queueInstance.queue, config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_HELLO);
+
+            channel.consume(queueInstance.queue, function(msg) {
+                if(msg.fields.routingKey == config.RABBIT_MQ_ROUTINGKEY_HELLO) {
+                    channel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_WORLD, Buffer.from(JSON.stringify(process.env.ACCESS_TOKEN_SECRET))); 
+                }
+            }, { noAck: true });
+        });
     });
 });
 

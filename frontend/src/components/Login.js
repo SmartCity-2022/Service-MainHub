@@ -1,5 +1,5 @@
 import { Form, Button } from 'react-bootstrap'
-import { useState } from 'react'
+import { useState, Navigate } from 'react'
 import { loginUser } from '../util/requests'
 import { ERR_INVALID_INPUT } from '../util/constants'
 import styles from '../styles/components/auth.module.css';
@@ -23,7 +23,8 @@ const Login = ({ setLoggedIn }) => {
         else {
             setError(false)
             setLoggedIn(true)
-            localStorage.setItem("tokens", JSON.stringify(res))
+            document.cookie = `accessToken=${res.accessToken}`
+            document.cookie = `refreshToken=${res.refreshToken}`
         }
     }
 

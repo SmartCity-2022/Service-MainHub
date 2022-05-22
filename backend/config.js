@@ -10,8 +10,11 @@ module.exports = Object.freeze({
     RABBIT_MQ_ROUTINGKEY_LOGIN      : "service.mainhub.login",
     RABBIT_MQ_ROUTINGKEY_REGISTER   : "service.mainhub.register",
     RABBIT_MQ_ROUTINGKEY_LOGOUT     : "service.mainhub.logout",
+    RABBIT_MQ_ROUTINGKEY_HELLO      : "service.hello",
+    RABBIT_MQ_ROUTINGKEY_WORLD      : "service.world",
     RABBIT_MQ_DOMAIN                : "127.0.0.1",
     RABBIT_MQ_PORT                  : 5672,
     RABBIT_MQ_USER                  : "guest",
-    RABBIT_MQ_PASSWORD              : "guest"
+    RABBIT_MQ_PASSWORD              : "guest",
+    CITIZEN_PORTAL_API_EMAIL_EXISTS : "http://localhost:3001/citizen/verify/"
 });

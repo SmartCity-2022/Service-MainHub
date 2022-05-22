@@ -8,13 +8,26 @@ CREATE TABLE Buerger(
 CREATE TABLE Log(
     id int NOT NULL AUTO_INCREMENT,
     buerger_id int NOT NULL,
-    loginDate timestamp DEFAULT CURRENT_TIMESTAMP,
+    registerDate timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (buerger_id) REFERENCES Buerger(id),
     PRIMARY KEY (id)
 );
 
 CREATE TABLE RefreshToken(
     id int NOT NULL AUTO_INCREMENT,
-    Token varchar(255),
+    token varchar(255),
     PRIMARY KEY (id)
 );
+
+DELIMITER $$
+
+CREATE TRIGGER LogInsert
+AFTER INSERT
+ON Buerger FOR EACH ROW
+BEGIN
+    INSERT INTO Log(buerger_id) 
+    SELECT MAX(id) FROM Buerger;
+        -- SELECT LAST_INSERT_ID();
+END$$    
+
+DELIMITER ;

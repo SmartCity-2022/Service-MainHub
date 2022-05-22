@@ -1,5 +1,5 @@
 import { Form, Button } from 'react-bootstrap'
-import { useState } from 'react'
+import { useState, Navigate } from 'react'
 import { registerUser } from '../util/requests'
 import { ERR_INVALID_INPUT, ERR_USER_NOT_FOUND, ERR_WRONG_PASS_REPEAT } from '../util/constants'
 import styles from '../styles/components/auth.module.css';
@@ -8,7 +8,7 @@ const Register = ({ setLoggedIn }) => {
 
     const [error, setError] = useState(false)
     const [data, setData] = useState({})
-
+        
     const handleSubmit = async e => {
         e.preventDefault()
 
@@ -29,10 +29,9 @@ const Register = ({ setLoggedIn }) => {
         else {
             setError(false)
             setLoggedIn(true)
-            localStorage.setItem("tokens", JSON.stringify(res))
+            document.cookie = `accessToken=${res.accessToken}`
+            document.cookie = `refreshToken=${res.refreshToken}`
         }
-
-        console.log(res)
     }
 
     
