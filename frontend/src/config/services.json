@@ -1,45 +1,56 @@
 [
     {
+        "url": "Bank",
         "name": "Bank",
         "link": ""
     },
     {
+        "url": "Bauamt",
         "name": "Bauamt",
         "link": ""
     },
     {
+        "url": "Bildungsportal",
         "name": "Bildungsportal",
         "link": ""
     },
     {
+        "url": "Buergerbuero",
         "name": "Bürgerbüro",
         "link": ""
     },
     {
+        "url": "Gesungsheitsportal",
         "name": "Gesungsheitsportal",
         "link": ""
     },
     {
+        "url": "Immobilienportal",
         "name": "Immobilienportal",
         "link": ""
     },
     {
+        "url": "Jobportal",
         "name": "Jobportal",
         "link": ""
     },
     {
+        "url": "Kulturportal",
         "name": "Kulturportal",
         "link": ""
     },
     {
+        "url": "Mobilitaetshub",
         "name": "Mobilitätshub",
         "link": ""
     },
     {
+        "url": "Polizei",
         "name": "Polizei",
         "link": ""
     },
     {
+        "url": "Strassenverkehrsamt",
         "name": "Straßenverkehrsamt",
         "link": ""
     }

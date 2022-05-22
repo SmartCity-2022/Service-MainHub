@@ -3,18 +3,19 @@ import 'react-pro-sidebar/dist/css/styles.css';
 import { Link } from 'react-router-dom';
 import services from '../config/services.json';
 import { logoutUser } from '../util/requests';
+import { getCookie } from '../util/util';
 
 const SideNav = ({ loggedIn, setLoggedIn }) => {
 
     const logout = () => {
-        const tokenString = localStorage.getItem("tokens")
+        const refreshToken = getCookie("refreshToken")
 
-        if(tokenString) {
-            const tokens = JSON.parse(tokenString)
-            logoutUser({token: tokens.refreshToken})
+        if(refreshToken) {
+            logoutUser({token: refreshToken})
         }
-        
-        localStorage.removeItem("tokens")
+
+        document.cookie = "accessToken=u; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "refreshToken=u; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
         setLoggedIn(false)
     }
 
@@ -28,7 +29,7 @@ const SideNav = ({ loggedIn, setLoggedIn }) => {
                 {
                     services.map(service => (
                         <li key={service.name} className={`mb-1 link-dark`}>
-                            <Link to={`/${service.link}`} className={styles.authElement}>{service.name}</Link>
+                            <Link to={`/${service.url}`} className={styles.authElement}>{service.name}</Link>
                         </li>
                     ))
                 }

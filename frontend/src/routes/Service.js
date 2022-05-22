@@ -1,9 +1,18 @@
+import { Navigate } from 'react-router-dom';
 import styles from '../styles/routes/service.module.css';
+import { getCookie } from '../util/util';
 
-const Test = () => {
+const Service = ({ path }) => {
+    
+    const accessToken = getCookie("accessToken")
+
+    console.log(path)
+
     return (
-        <iframe className={styles.frame} src="https://google.de&output=embed" title="W3Schools Free Online Web Tutorials"></iframe>     
+        accessToken 
+            ? <iframe className={styles.frame} src={path} ></iframe>  
+            : <Navigate to="/auth"></Navigate>
     );
 }
 
-export default Test
+export default Service
