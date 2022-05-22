@@ -24,7 +24,7 @@ const pool = mysql.createPool({
     connectionLimit : config.DATABASE_CONNECTION_LIMIT,
     host            : config.DATABASE_HOST, 
     user            : config.DATABASE_USER,
-    Password        : config.DATABASE_PASSWORD, 
+    password        : config.DATABASE_PASSWORD, 
     database        : config.DATABASE_NAME
 });
 
