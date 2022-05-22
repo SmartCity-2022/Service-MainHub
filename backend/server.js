@@ -77,9 +77,12 @@ app.post('/api/register', async (req, res) => {
 })
 
 app.post('/api/login', async (req, res) => {
-    const user = "SELECT Buerger.password, Buerger.email FROM Buerger WHERE Buerger.email = '" + req.body.email + "'";
+    const values = [
+        req.body.email
+    ];
+    const sql = "SELECT buerger.password, buerger.email FROM buerger WHERE buerger.email = ?";
     let userResult
-    pool.query(user, async function (err, result) {
+    pool.query(sql, values, async function (err, result) {
         if (err) {
             return res.status(500).send('Server Eror on Login');
         }
@@ -105,8 +108,11 @@ app.post('/api/login', async (req, res) => {
 
 app.delete('/api/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token != req.body.token)
-    const sql = "DELETE FROM RefreshToken WHERE token = '" + req.body.token + "';";
-    pool.query(sql, function (err, result) {
+    const values = [
+        req.body.token
+    ];
+    const sql = "DELETE FROM RefreshToken WHERE token = ?";
+    pool.query(sql, values, function (err, result) {
         if (err) return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
         if (result.affectedRows === 0) {
             return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
@@ -137,8 +143,11 @@ function getAccessToken(userEmail) {
 function getRefreshToken(userEmail) {
     const refreshToken = jwt.sign(userEmail, process.env.REFRESH_TOKEN_SECRET)
     refreshTokens.push(refreshToken)
-    const sql = "INSERT INTO RefreshToken (token) VALUES ('" + refreshToken + "');";
-    pool.query(sql, function (err, result) {
+    const values = [
+        refreshToken
+    ];
+    const sql = "INSERT INTO RefreshToken (token) VALUES (?);";
+    pool.query(sql, values, function (err, result) {
         if(err) console.log(err)
     })
     return refreshToken
