@@ -7,7 +7,7 @@ POST http://localhost:4000/api/login
 Content-Type: application/json
 
 {
-    "email": "test1@me.de",
+    "email": "Deron_Koepp68@hotmail.com",
     "password": "test"
 }
 
@@ -17,7 +17,7 @@ POST http://localhost:4000/api/token
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiJ9.dGVzdDFAbWUuZGU.KN8xbolMR1KghA6gn7_9W5jLF3oms1PYcHzSj_NTBN4"
+    "token": "eyJhbGciOiJIUzI1NiJ9.RGVyb25fS29lcHA2OEBob3RtYWlsLmNvbQ.ciA7zC__9swzb9xksyrO7WrKhVz1AKJpCqMHMwEoKEc"
 }
 
 ###
@@ -26,7 +26,7 @@ DELETE http://localhost:4000/api/logout
 Content-Type: application/json
 
 {
-    "token":  "eyJhbGciOiJIUzI1NiJ9.dGVzdDFAbWUuZGU.KN8xbolMR1KghA6gn7_9W5jLF3oms1PYcHzSj_NTBN4"
+    "token":  "eyJhbGciOiJIUzI1NiJ9.QXJub2xkb19DYXJ0ZXJAZ21haWwuY29t.FQfP21_U4Y4Gh5YCy-BWyzOqN0SH2kvfxEeGF_vQQIE"
 }
 
 ###
@@ -35,6 +35,6 @@ POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "email": "test5@me.de",
+    "email": "Raoul_Mraz@gmail.com",
     "password": "test"
 }

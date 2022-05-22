@@ -36,23 +36,29 @@ const generateAccessToken = user => {
 
 app.post('/api/register', async (req, res) => {
 
-    let exists = true
-    axios
-        .get(config.CITIZEN_PORTAL_API_EMAIL_EXISTS)
-        .then(resp => {
-            if(!resp.data.exists) 
-                exists = false
-        })
-
-    if(!exists)
-        return res.status(400).send({msg: "Sie müssen sich erst als Bürger im Bürgeramt melden!"});
+    try {
+        let exists = true
+        await axios
+            .post(config.CITIZEN_PORTAL_API_EMAIL_EXISTS, {
+                email: req.body.email,
+            })
+            .then(resp => {
+                if(!resp.data.exists) 
+                    exists = false
+            })
+    
+        if(!exists)
+            return res.status(400).send({msg: "Sie müssen sich erst als Bürger im Bürgeramt melden!"});
+    } catch (error) {
+        console.log(error)
+    }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const values = [
         req.body.email,
         req.body.password = hashedPassword
     ];
-    const sql = "INSERT INTO `buerger` (email, password) VALUES (?,?);";
+    const sql = "INSERT INTO `Buerger` (email, password) VALUES (?,?);";
     pool.query(sql, values, function (err, result) {
         if (err) {
             if (err.code === 'ER_DUP_ENTRY')
@@ -70,7 +76,7 @@ app.post('/api/register', async (req, res) => {
 })
 
 app.post('/api/login', async (req, res) => {
-    const user = "SELECT buerger.password, buerger.email FROM buerger WHERE buerger.email = '" + req.body.email + "'";
+    const user = "SELECT Buerger.password, Buerger.email FROM Buerger WHERE Buerger.email = '" + req.body.email + "'";
     let userResult
     pool.query(user, async function (err, result) {
         if (err) {
@@ -87,7 +93,7 @@ app.post('/api/login', async (req, res) => {
                 amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGIN, Buffer.from(JSON.stringify(data))); 
                 res.json(data)
             }else{
-                res.send('Failed to log in')
+                res.status(400).send({errMsg: constants.ERR_INVALID_PASSWORD})
             }
         } catch {
             res.status(500).send('Server error')
@@ -157,7 +163,7 @@ amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${con
 
     connection.createChannel(function(error1, channel) { 
         if(error1) throw error1;
-        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: false}); 
+        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: true}); 
         amqpChannel = channel 
 
         channel.assertQueue("", { exclusive: true }, (error2, queueInstance) => {

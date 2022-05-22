@@ -15,6 +15,6 @@ CREATE TABLE Log(
 
 CREATE TABLE RefreshToken(
     id int NOT NULL AUTO_INCREMENT,
-    Token varchar(255),
+    token varchar(255),
     PRIMARY KEY (id)
 );
