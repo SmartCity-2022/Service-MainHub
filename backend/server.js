@@ -173,7 +173,7 @@ amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${con
 
     connection.createChannel(function(error1, channel) { 
         if(error1) throw error1;
-        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: false}); 
+        channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: true}); 
         amqpChannel = channel 
 
         channel.assertQueue("", { exclusive: true }, (error2, queueInstance) => {
