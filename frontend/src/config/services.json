@@ -2,56 +2,56 @@
     {
         "url": "Bank",
         "name": "Bank",
-        "link": "https://smartcity.w-mi.de/bank"
+        "link": "https://bank.smartcity.w-mi.de"
     },
     {
         "url": "Bauamt",
         "name": "Bauamt",
-        "link": "https://smartcity.w-mi.de/bauamt"
+        "link": "https://bauamt.smartcity.w-mi.de"
     },
     {
         "url": "Bildungsportal",
         "name": "Bildungsportal",
-        "link": "https://smartcity.w-mi.de/bildung"
+        "link": "https://bildung.smartcity.w-mi.de"
     },
     {
         "url": "Buergerbuero",
         "name": "Bürgerbüro",
-        "link": "https://smartcity.w-mi.de/buergerbuero"
+        "link": "https://buergerbuero.smartcity.w-mi.de"
     },
     {
         "url": "Gesungsheitsportal",
         "name": "Gesungsheitsportal",
-        "link": "https://smartcity.w-mi.de/gesundheit"
+        "link": "https://gesundheit.smartcity.w-mi.de"
     },
     {
         "url": "Immobilienportal",
         "name": "Immobilienportal",
-        "link": "https://smartcity.w-mi.de/immobilien"
+        "link": "https://immobilien.smartcity.w-mi.de"
     },
     {
         "url": "Jobportal",
         "name": "Jobportal",
-        "link": "https://smartcity.w-mi.de/jobs"
+        "link": "https://jobs.smartcity.w-mi.de"
     },
     {
         "url": "Kulturportal",
         "name": "Kulturportal",
-        "link": "https://smartcity.w-mi.de/kultur"
+        "link": "https://kultur.smartcity.w-mi.de"
     },
     {
         "url": "Mobilitaetshub",
         "name": "Mobilitätshub",
-        "link": "https://smartcity.w-mi.de/mobilitaet"
+        "link": "https://mobilitaet.smartcity.w-mi.de"
     },
     {
         "url": "Polizei",
         "name": "Polizei",
-        "link": "https://smartcity.w-mi.de/polizei"
+        "link": "https://polizei.smartcity.w-mi.de"
     },
     {
         "url": "Strassenverkehrsamt",
         "name": "Straßenverkehrsamt",
-        "link": "https://smartcity.w-mi.de/strassenverkehrsamt"
+        "link": "https://strassenverkehrsamt.smartcity.w-mi.de"
     }
 ]
