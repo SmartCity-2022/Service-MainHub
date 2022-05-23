@@ -2,56 +2,56 @@
     {
         "url": "Bank",
         "name": "Bank",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/bank"
     },
     {
         "url": "Bauamt",
         "name": "Bauamt",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/bauamt"
     },
     {
         "url": "Bildungsportal",
         "name": "Bildungsportal",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/bildung"
     },
     {
         "url": "Buergerbuero",
         "name": "Bürgerbüro",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/buergerbuero"
     },
     {
         "url": "Gesungsheitsportal",
         "name": "Gesungsheitsportal",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/gesundheit"
     },
     {
         "url": "Immobilienportal",
         "name": "Immobilienportal",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/immobilien"
     },
     {
         "url": "Jobportal",
         "name": "Jobportal",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/jobs"
     },
     {
         "url": "Kulturportal",
         "name": "Kulturportal",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/kultur"
     },
     {
         "url": "Mobilitaetshub",
         "name": "Mobilitätshub",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/mobilitaet"
     },
     {
         "url": "Polizei",
         "name": "Polizei",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/polizei"
     },
     {
         "url": "Strassenverkehrsamt",
         "name": "Straßenverkehrsamt",
-        "link": ""
+        "link": "https://smartcity.w-mi.de/strassenverkehrsamt"
     }
 ]
