@@ -84,7 +84,7 @@ app.post('/api/login', async (req, res) => {
     let userResult
     pool.query(sql, values, async function (err, result) {
         if (err) {
-            return res.status(500).send('Server Eror on Login');
+            return res.status(500).send('Server Error on Login');
         }
         if (result.length === 0) 
         return res.status(400).send({errMsg: constants.ERR_INVALID_EMAIL_PASSWORD})
