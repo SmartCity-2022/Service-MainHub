@@ -80,7 +80,7 @@ app.post('/api/login', async (req, res) => {
     const values = [
         req.body.email
     ];
-    const sql = "SELECT buerger.password, buerger.email FROM buerger WHERE buerger.email = ?";
+    const sql = "SELECT Buerger.password, Buerger.email FROM Buerger WHERE Buerger.email = ?";
     let userResult
     pool.query(sql, values, async function (err, result) {
         if (err) {
