@@ -42,6 +42,12 @@
         "disabled": false
     },
     {
+        "url": "Strassenverkehrsamt",
+        "name": "Straßenverkehrsamt",
+        "link": "",
+        "disabled": false
+    },
+    {
         "url": "Kulturportal",
         "name": "Kulturportal",
         "link": "",
@@ -58,11 +64,5 @@
         "name": "Polizei",
         "link": "",
         "disabled": true
-    },
-    {
-        "url": "Strassenverkehrsamt",
-        "name": "Straßenverkehrsamt",
-        "link": "",
-        "disabled": false
     }
 ]
