@@ -38,13 +38,13 @@
     {
         "url": "Jobportal",
         "name": "Jobportal",
-        "link": "",
+        "link": "https://jobs.smartcity.w-mi.de",
         "disabled": false
     },
     {
         "url": "Strassenverkehrsamt",
         "name": "Straßenverkehrsamt",
-        "link": "https://jobs.smartcity.w-mi.de",
+        "link": "https://strassenverkehrsamt.smartcity.w-mi.de",
         "disabled": false
     },
     {
