@@ -2,37 +2,37 @@
     {
         "url": "Bank",
         "name": "Bank",
-        "link": "",
+        "link": "https://bank.smartcity.w-mi.de",
         "disabled": false
     },
     {
         "url": "Bauamt",
         "name": "Bauamt",
-        "link": "",
+        "link": "https://bauamt.smartcity.w-mi.de",
         "disabled": false
     },
     {
         "url": "Bildungsportal",
         "name": "Bildungsportal",
-        "link": "",
+        "link": "https://bildung.smartcity.w-mi.de",
         "disabled": false
     },
     {
         "url": "Buergerbuero",
         "name": "Bürgerbüro",
-        "link": "",
+        "link": "https://buergerbuero.smartcity.w-mi.de",
         "disabled": false
     },
     {
         "url": "Gesungsheitsportal",
         "name": "Gesungsheitsportal",
-        "link": "",
+        "link": "https://gesundheit.smartcity.w-mi.de",
         "disabled": false
     },
     {
         "url": "Immobilienportal",
         "name": "Immobilienportal",
-        "link": "",
+        "link": "https://immobilien.smartcity.w-mi.de",
         "disabled": false
     },
     {
@@ -44,25 +44,25 @@
     {
         "url": "Strassenverkehrsamt",
         "name": "Straßenverkehrsamt",
-        "link": "",
+        "link": "https://jobs.smartcity.w-mi.de",
         "disabled": false
     },
     {
         "url": "Kulturportal",
         "name": "Kulturportal",
-        "link": "",
+        "link": "https://kultur.smartcity.w-mi.de",
         "disabled": true
     },
     {
         "url": "Mobilitaetshub",
         "name": "Mobilitätshub",
-        "link": "",
+        "link": "https://mobilitaet.smartcity.w-mi.de",
         "disabled": true
     },
     {
         "url": "Polizei",
         "name": "Polizei",
-        "link": "",
+        "link": "https://polizei.smartcity.w-mi.de",
         "disabled": true
     }
 ]
