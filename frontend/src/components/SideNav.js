@@ -29,7 +29,11 @@ const SideNav = ({ loggedIn, setLoggedIn }) => {
                 {
                     services.map(service => (
                         <li key={service.name} className={`mb-1 link-dark`}>
-                            <Link to={`/${service.url}`} className={styles.authElement}>{service.name}</Link>
+                            {
+                                service.disabled
+                                    ? <span className={styles.disabled}>{service.name}</span>
+                                    : <Link to={`/${service.url}`} className={styles.authElement}>{service.name}</Link>
+                            }
                         </li>
                     ))
                 }

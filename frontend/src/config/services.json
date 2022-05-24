@@ -2,56 +2,67 @@
     {
         "url": "Bank",
         "name": "Bank",
-        "link": ""
+        "link": "",
+        "disabled": false
     },
     {
         "url": "Bauamt",
         "name": "Bauamt",
-        "link": ""
+        "link": "",
+        "disabled": false
     },
     {
         "url": "Bildungsportal",
         "name": "Bildungsportal",
-        "link": ""
+        "link": "",
+        "disabled": false
     },
     {
         "url": "Buergerbuero",
         "name": "Bürgerbüro",
-        "link": ""
+        "link": "",
+        "disabled": false
     },
     {
         "url": "Gesungsheitsportal",
         "name": "Gesungsheitsportal",
-        "link": ""
+        "link": "",
+        "disabled": false
     },
     {
         "url": "Immobilienportal",
         "name": "Immobilienportal",
-        "link": ""
+        "link": "",
+        "disabled": false
     },
     {
         "url": "Jobportal",
         "name": "Jobportal",
-        "link": ""
+        "link": "",
+        "disabled": false
     },
     {
         "url": "Kulturportal",
         "name": "Kulturportal",
-        "link": ""
+        "link": "",
+        "disabled": true
     },
     {
         "url": "Mobilitaetshub",
         "name": "Mobilitätshub",
-        "link": ""
+        "link": "",
+        "disabled": true
     },
     {
         "url": "Polizei",
         "name": "Polizei",
-        "link": ""
+        "link": "",
+        "disabled": true
     },
     {
         "url": "Strassenverkehrsamt",
         "name": "Straßenverkehrsamt",
-        "link": ""
+        "link": "",
+        "disabled": false
     }
 ]

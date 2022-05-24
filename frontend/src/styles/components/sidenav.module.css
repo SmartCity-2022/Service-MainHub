@@ -13,3 +13,7 @@
 .authElement:hover {
     color: #888;
 }
+
+.disabled {
+    color: #999;
+}
