@@ -31,8 +31,6 @@ const Register = ({ setLoggedIn }) => {
             setLoggedIn(true)
             document.cookie = `accessToken=${res.accessToken};domain=.smartcity.w-mi.de`
             document.cookie = `refreshToken=${res.refreshToken};domain=.smartcity.w-mi.de`
-            document.cookie = `accessToken=${res.accessToken}`
-            document.cookie = `refreshToken=${res.refreshToken}`
         }
     }
 

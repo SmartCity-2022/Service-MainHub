@@ -14,8 +14,8 @@ const SideNav = ({ loggedIn, setLoggedIn }) => {
             logoutUser({token: refreshToken})
         }
 
-        document.cookie = "accessToken=u; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        document.cookie = "refreshToken=u; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "accessToken=u; domain=.smartcity.w-mi.de; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "refreshToken=u; domain=.smartcity.w-mi.de; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
         setLoggedIn(false)
     }
 
