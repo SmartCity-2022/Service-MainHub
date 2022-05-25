@@ -183,7 +183,7 @@ amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${con
 
             channel.consume(queueInstance.queue, function(msg) {
                 if(msg.fields.routingKey == config.RABBIT_MQ_ROUTINGKEY_HELLO) {
-                    channel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_WORLD, Buffer.from(JSON.stringify(process.env.ACCESS_TOKEN_SECRET))); 
+                    channel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_WORLD, Buffer.from(process.env.ACCESS_TOKEN_SECRET)); 
                 }
             }, { noAck: true });
         });
