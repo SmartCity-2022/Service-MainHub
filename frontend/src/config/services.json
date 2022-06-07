@@ -33,7 +33,7 @@
         "url": "Immobilienportal",
         "name": "Immobilienportal",
         "link": "https://immobilien.smartcity.w-mi.de",
-        "disabled": false
+        "disabled": true
     },
     {
         "url": "Jobportal",
