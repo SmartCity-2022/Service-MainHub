@@ -74,7 +74,7 @@ describe("BAD POST Requests", ()  => {
     expect(response.body.errMsg).toBe("Sie müssen sich erst als Bürger im Bürgeramt melden!");
   })
 
-  test("USER BAD LOGIN: should respond with 200 status code, JSON content-type and a error message", async () => {
+  test("USER BAD LOGIN: should respond with 400 status code, JSON content-type and a error message", async () => {
     const response = await request(app).post("/api/login").send({
       email: emailBad,
       password: password
@@ -84,7 +84,7 @@ describe("BAD POST Requests", ()  => {
     expect(response.body.errMsg).toBe("Ungültige Email oder Passwort.");
   })
 
-  test("USER BAD REFRESHTOKEN: should respond with 200 status code, JSON content-type and a error message", async () => {
+  test("USER BAD REFRESHTOKEN: should respond with 403 status code, JSON content-type and a error message", async () => {
     const response = await request(app).post("/api/token").send({
       token: tokenBad
     })
@@ -95,7 +95,7 @@ describe("BAD POST Requests", ()  => {
 })
 
 describe("BAD DELETE Requests", () => {
-  test("USER BAD LOGOUT: should respond with 200 status code and JSON content-type and a error message", async () => {
+  test("USER BAD LOGOUT: should respond with 500 status code and JSON content-type and a error message", async () => {
     const response = await request(app).delete("/api/logout").send({
       token: tokenBad
     })
