@@ -11,7 +11,7 @@ const axios = require('axios');
 var cors = require('cors');
 
 app.use(express.json())
-app.listen(config.BACKEND_PORT)
+// app.listen(config.BACKEND_PORT)
 
 let amqpConn
 let amqpChannel
@@ -22,6 +22,7 @@ app.use(cors({
 
 const pool = mysql.createPool({
     connectionLimit : config.DATABASE_CONNECTION_LIMIT,
+    multipleStatements: true,
     host            : config.DATABASE_HOST, 
     user            : config.DATABASE_USER,
     password        : config.DATABASE_PASSWORD, 
@@ -104,6 +105,20 @@ app.post('/api/login', async (req, res) => {
         }
 
     });
+})
+
+app.delete('/api/deleteuser', (req, res) => {
+    const values = [
+        req.body.email,
+        req.body.email
+    ];
+    const sql = `DELETE FROM UserLog WHERE buerger_id = (SELECT Buerger.id FROM Buerger WHERE Buerger.email = ?); DELETE FROM Buerger WHERE Buerger.email = ?;`;
+    pool.query(sql, values, function (err, result) {
+        console.log(result)
+        if (err) return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
+        const data = { msg: 'User deleted' };
+        res.json(data).status(204)
+    })
 })
 
 app.delete('/api/logout', (req, res) => {
@@ -194,3 +209,5 @@ process.on("SIGINT", () => {
     if(amqpConn) amqpConn.close();
     process.exit(0);
 });
+
+module.exports = app;

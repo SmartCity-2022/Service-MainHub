@@ -5,7 +5,7 @@ CREATE TABLE Buerger(
     PRIMARY KEY (id)
 );
 
-CREATE TABLE Log(
+CREATE TABLE UserLog(
     id int NOT NULL AUTO_INCREMENT,
     buerger_id int NOT NULL,
     registerDate timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -21,11 +21,11 @@ CREATE TABLE RefreshToken(
 
 DELIMITER $$
 
-CREATE TRIGGER LogInsert
+CREATE TRIGGER UserLogInsert
 AFTER INSERT
 ON Buerger FOR EACH ROW
 BEGIN
-    INSERT INTO Log(buerger_id) 
+    INSERT INTO UserLog(buerger_id) 
     SELECT MAX(id) FROM Buerger;
         -- SELECT LAST_INSERT_ID();
 END$$    
