@@ -1,8 +1,9 @@
 const app = require("../server.js"); // Link to your server file
 const request = require("supertest");
+const config = require('../config.js');
 
 var refreshToken;
-var email = "Toni_Schimmel11@hotmail.com";
+var email = config.API_TEST_EMAIL
 var password = "testPassword";
 var emailBad = "wrongEmail";
 var tokenBad = "wrongToken";
