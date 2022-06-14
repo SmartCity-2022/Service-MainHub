@@ -86,7 +86,6 @@ app.post('/api/register', async (req, res) => {
         const refreshToken = getRefreshToken(req.body.email)
         const data = { accessToken: accessToken, refreshToken: refreshToken };
 
-        console.log(data)
         amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_REGISTER, Buffer.from(JSON.stringify(data))); 
         res.json(data)
     });
