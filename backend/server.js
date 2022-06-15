@@ -8,6 +8,7 @@ const amqp = require("amqplib/callback_api");
 const constants = require('./constants.js')
 const config = require('./config.js')
 const axios = require('axios');
+const Joi = require('joi');
 var cors = require('cors');
 
 app.use(express.json())
@@ -35,10 +36,23 @@ const generateAccessToken = user => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
 }
 
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', async (req, res) => { 
+    try {
+        const error = await validateSchema.validateAsync(req.body);
+    }
+    catch (err) { 
+        if (err.details[0].type == 'string.pattern.base')
+            return res.status(400).send({errMsg: constants.ERR_INVALID_EMAIL_VALIDATION_FAILED}); 
+        if (err.details[0].type == 'string.min')
+            return res.status(400).send({errMsg: constants.ERR_INVALID_PASSWORD_MIN_LENGTH}); 
+        if (err.details[0].type == 'string.max')
+            return res.status(400).send({errMsg: constants.ERR_INVALID_PASSWORD_MAX_LENGTH});
+    }
+
+    if (req.body.password != req.body.password2)
+        return res.status(400).send({errMsg: constants.ERR_INVALID_PASSWORD_MATCH});
 
     let exists = false
-
     try {
         await axios
             .post(config.CITIZEN_PORTAL_API_EMAIL_EXISTS, {
@@ -114,7 +128,6 @@ app.delete('/api/deleteuser', (req, res) => {
     ];
     const sql = `DELETE FROM UserLog WHERE buerger_id = (SELECT Buerger.id FROM Buerger WHERE Buerger.email = ?); DELETE FROM Buerger WHERE Buerger.email = ?;`;
     pool.query(sql, values, function (err, result) {
-        console.log(result)
         if (err) return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
         const data = { msg: 'User deleted' };
         res.json(data).status(204)
@@ -180,6 +193,19 @@ function getRefreshToken(userEmail) {
         next()
     })
 }*/
+
+const validateSchema = Joi.object({
+    email: Joi.string()
+        .min(3)
+        .required()
+        .pattern(new RegExp('.@.+\..')),
+
+    password: Joi.string()
+        .min(8)
+        .pattern(new RegExp('.{8,30}$')),
+
+    password2: Joi.ref('password'),
+})
 
 
 amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${config.RABBIT_MQ_DOMAIN}:${config.RABBIT_MQ_PORT}`, function(error0, connection) {
