@@ -157,7 +157,7 @@ app.post('/api/token', (req, res) => {
     if(!refreshTokens.includes(refreshToken)) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if(err) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
-        const accessToken = generateAccessToken({ name: user.name })
+        const accessToken = generateAccessToken({ email: user.name })
         return res.json({ accessToken: accessToken })
     })
 })
