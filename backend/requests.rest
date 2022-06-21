@@ -7,7 +7,7 @@ POST http://localhost:4000/api/login
 Content-Type: application/json
 
 {
-    "email": "Arnoldo_Carter@gmail.com",
+    "email": "Hudson.Steuber28@yahoo.com",
     "password": "testtest"
 }
 
@@ -17,7 +17,7 @@ POST http://localhost:4000/api/token
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiJ9.QXJub2xkb19DYXJ0ZXJAZ21haWwuY29t.FQfP21_U4Y4Gh5YCy-BWyzOqN0SH2kvfxEeGF_vQQIE"
+    "token": "eyJhbGciOiJIUzI1NiJ9.SHVkc29uLlN0ZXViZXIyOEB5YWhvby5jb20.8VKQaPc9USHY9cSsaL7f1KKxjXY85ArLc0O5ZDZrAcQ"
 }
 
 ###
@@ -26,7 +26,7 @@ DELETE http://localhost:4000/api/logout
 Content-Type: application/json
 
 {
-    "token":  "eyJhbGciOiJIUzI1NiJ9.QnJ5b24uV3Vuc2NoQGhvdG1haWwuY29t.dcojq_QNTW0YbZZme_3x2fm19uXr7VR_kBuhvAWmwW0"
+    "token":  "eyJhbGciOiJIUzI1NiJ9.SHVkc29uLlN0ZXViZXIyOEB5YWhvby5jb20.8VKQaPc9USHY9cSsaL7f1KKxjXY85ArLc0O5ZDZrAcQ"
 }
 
 ###
@@ -44,7 +44,7 @@ POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "email": "Arnoldo_Carter@gmail.com",
+    "email": "Hudson.Steuber28@yahoo.com",
     "password": "testtest",
     "password2": "testtest"
 }
