@@ -1,11 +1,13 @@
 import styles from '../styles/components/sidenav.module.css';
 import 'react-pro-sidebar/dist/css/styles.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import services from '../config/services.json';
 import { logoutUser } from '../util/requests';
 import { getCookie } from '../util/util';
 
 const SideNav = ({ loggedIn, setLoggedIn }) => {
+
+    const navigate = useNavigate();
 
     const logout = () => {
         const refreshToken = getCookie("refreshToken")
@@ -17,6 +19,7 @@ const SideNav = ({ loggedIn, setLoggedIn }) => {
         document.cookie = "accessToken=u; domain=.smartcity.w-mi.de; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
         document.cookie = "refreshToken=u; domain=.smartcity.w-mi.de; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
         setLoggedIn(false)
+        navigate('/auth');
     }
 
     return (
