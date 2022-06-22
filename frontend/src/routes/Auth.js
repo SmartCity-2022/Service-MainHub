@@ -24,7 +24,7 @@ const Auth = ({ setLoggedIn }) => {
                         <Tab eventKey="login" title="Login">
                             <Login setLoggedIn={setLoggedIn} />
                         </Tab>
-                        <Tab eventKey="registerUser" title="Register" >
+                        <Tab eventKey="registerUser" title="Register">
                             <Register setLoggedIn={setLoggedIn} />
                         </Tab>
                     </Tabs>

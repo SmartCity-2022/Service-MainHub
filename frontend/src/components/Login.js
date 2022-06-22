@@ -30,7 +30,7 @@ const Login = ({ setLoggedIn }) => {
 
     return (
         <Form onSubmit={(e) => handleSubmit(e)}>
-            {error && <Form.Text className="text-danger mb-4">
+            {error && <Form.Text id="errLogin" className="text-danger mb-4">
                 {error}
             </Form.Text>}
             <Form.Group className="my-3" controlId="formBasicEmail">
@@ -43,7 +43,7 @@ const Login = ({ setLoggedIn }) => {
                 <Form.Control className={`${styles.input} m-0`} type="password" placeholder="Passwort" onChange={(e) => setData({ ...data, password: e.target.value })}/>
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" id="submitLogin">
                 Submit
             </Button>
         </Form>
