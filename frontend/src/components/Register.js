@@ -52,7 +52,7 @@ const Register = ({ setLoggedIn }) => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Passwort wiederholen</Form.Label>
+                <Form.Label id="repeatPassword">Passwort wiederholen</Form.Label>
                 <Form.Control className={`${styles.input} m-0`} type="password" placeholder="Passwort erneut eingeben" onChange={(e) => setData({ ...data, password2: e.target.value })}/>
             </Form.Group>
 
