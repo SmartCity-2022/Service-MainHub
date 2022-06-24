@@ -1,19 +1,19 @@
 const app = require("../server.js"); // Link to your server file
 const request = require("supertest");
-const config = require('../config.js');
 
 var refreshToken;
-var email = config.API_TEST_EMAIL
+var email = "TestEmail@testmail.com"
 var password = "testPassword";
-var emailBad = "wrongEmail";
+var emailBad = "wrongEmail@wrongEmail.de";
 var tokenBad = "wrongToken";
 
 describe("POST Requests", ()  => {
 
   test("USER REGISTER: should respond with 200 status code, JSON content-type, access Token and refresh Token have to be defined", async () => {
-    const response = await request(app).post("/api/register").send({
+    const response = await request(app).post("/test/register").send({
       email: email,
-      password: password
+      password: password,
+      password2: password
     })
     refreshToken = response.body.refreshToken;
     expect(response.statusCode).toBe(200);
@@ -67,7 +67,8 @@ describe("BAD POST Requests", ()  => {
   test("USER BAD REGISTER: should respond with 400 status code, JSON content-type and a error message", async () => {
     const response = await request(app).post("/api/register").send({
       email: emailBad,
-      password: password
+      password: password,
+      password2: password
     })
     refreshToken = response.body.refreshToken;
     expect(response.statusCode).toBe(400);

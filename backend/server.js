@@ -9,11 +9,12 @@ const constants = require('./constants.js')
 const config = require('./config.js')
 const axios = require('axios');
 const Joi = require('joi');
+const routerTesting = require('./routes/testing.js')
+
 var cors = require('cors');
 
 app.use(express.json())
-// app.listen(config.BACKEND_PORT)
-
+app.use(routerTesting)
 let amqpConn
 let amqpChannel
 
