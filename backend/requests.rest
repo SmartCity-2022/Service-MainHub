@@ -44,7 +44,7 @@ POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "email": "Hudson.Steuber28@yahoo.com",
-    "password": "testtest",
-    "password2": "testtest"
+    "email": "wrongEmail@wrongEmail.de",
+    "password": "testPassword",
+    "password2": "testPassword"
 }
