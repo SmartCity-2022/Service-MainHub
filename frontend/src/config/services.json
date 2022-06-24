@@ -30,12 +30,6 @@
         "disabled": false
     },
     {
-        "url": "Immobilienportal",
-        "name": "Immobilienportal",
-        "link": "https://immobilien.smartcity.w-mi.de",
-        "disabled": false
-    },
-    {
         "url": "Jobportal",
         "name": "Jobportal",
         "link": "https://jobs.smartcity.w-mi.de",
@@ -46,6 +40,12 @@
         "name": "Straßenverkehrsamt",
         "link": "https://strassenverkehrsamt.smartcity.w-mi.de",
         "disabled": false
+    },
+    {
+        "url": "Immobilienportal",
+        "name": "Immobilienportal",
+        "link": "https://immobilien.smartcity.w-mi.de",
+        "disabled": true
     },
     {
         "url": "Kulturportal",
