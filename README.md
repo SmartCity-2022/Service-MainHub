@@ -8,7 +8,7 @@ wodurch diese als als Microservice in den Mainhub eingebunden werden.
 - Datenbank: Ausführung des `create.sql` Scripts
 
 ## Ausführung
-- Backend: `node server.js`
+- Backend: `node start.js`
 - Frontend: `npm start`
 
 ## Konfiguration
