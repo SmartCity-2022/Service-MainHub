@@ -1,3 +1,5 @@
+![GitHub tag (latest SemVer)](https://shields.herrvergesslich.de/github/v/tag/smartcity-2022/service-mainhub?label=Version)
+
 # Service-MainHub
 Der Mainhub dient als zentrale Anlaufstelle für alle Services. Man kann sich über den Mainhub registrieren, einloggen und auf sämtliche Services über eine Navigationsbar zugreifen,
 wodurch diese als als Microservice in den Mainhub eingebunden werden.
