@@ -50,5 +50,5 @@ wodurch diese als als Microservice in den Mainhub eingebunden werden.
 |Jobportal|https://jobs.smartcity.w-mi.de|
 |Kulturportal||
 |Mobilitätshub||
-|Polizei||
+|Polizei|https://polizei.smartcity.w-mi.de|
 |Straßenverkehrsamt|https://strassenverkehrsamt.smartcity.w-mi.de|
