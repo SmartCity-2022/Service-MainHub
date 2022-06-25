@@ -17,6 +17,6 @@ COPY --from=build-stage /app /app
 
 ENV NODE_ENV=production
 
-CMD node server.js
+CMD node start.js
 
 EXPOSE 80
