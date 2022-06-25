@@ -31,8 +31,6 @@ const pool = mysql.createPool({
     database        : config.DATABASE_NAME
 });
 
-let refreshTokens = []
-
 const generateAccessToken = user => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
 }
@@ -68,7 +66,7 @@ app.post('/api/register', async (req, res) => {
     }
 
     if(!exists)
-            return res.status(400).send({errMsg: "Sie müssen sich erst als Bürger im Bürgeramt melden!"});
+        return res.status(400).send({errMsg: "Sie müssen sich erst als Bürger im Bürgeramt melden!"});
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const values = [
@@ -136,7 +134,6 @@ app.delete('/api/deleteuser', (req, res) => {
 })
 
 app.delete('/api/logout', (req, res) => {
-    refreshTokens = refreshTokens.filter(token => token != req.body.token)
     const values = [
         req.body.token
     ];
@@ -155,11 +152,20 @@ app.delete('/api/logout', (req, res) => {
 app.post('/api/token', (req, res) => {
     const refreshToken = req.body.token
     if(refreshToken == null) return res.status(401).send({errMsg:  constants.ERR_MISSING_TOKEN})
-    if(!refreshTokens.includes(refreshToken)) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, email) => {
-        if(err) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
-        const accessToken = generateAccessToken({ email })
-        return res.json({ accessToken: accessToken })
+    const values = [ refreshToken ]
+
+    const sql = "SELECT * FROM RefreshToken WHERE token = ?";
+    pool.query(sql, values, function (err, result) {
+        if (err)
+            return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
+        if (result.length <= 0)
+            return res.status(500).send({errMsg: 'Invalid RefreshToken!'});
+
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, email) => {
+            if(err) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
+            const accessToken = generateAccessToken({ email })
+            return res.json({ accessToken: accessToken })
+        })
     })
 })
 
@@ -171,7 +177,6 @@ function getAccessToken(userEmail) {
 
 function getRefreshToken(userEmail) {
     const refreshToken = jwt.sign(userEmail, process.env.REFRESH_TOKEN_SECRET)
-    refreshTokens.push(refreshToken)
     const values = [
         refreshToken
     ];
@@ -181,19 +186,6 @@ function getRefreshToken(userEmail) {
     })
     return refreshToken
 }
-
-/*const authToken = (req, res, next) => {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-
-    if(token == null) return res.sendStatus(401)
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if(err) return res.sendStatus(403)
-        req.user = user
-        next()
-    })
-}*/
 
 const validateSchema = Joi.object({
     email: Joi.string()
