@@ -32,7 +32,7 @@ const pool = mysql.createPool({
 });
 
 const generateAccessToken = user => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '120m' })
 }
 
 app.post('/api/register', async (req, res) => { 
