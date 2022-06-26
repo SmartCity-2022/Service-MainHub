@@ -42,6 +42,12 @@
         "disabled": false
     },
     {
+        "url": "Polizei",
+        "name": "Polizei",
+        "link": "https://polizei.smartcity.w-mi.de",
+        "disabled": false
+    },
+    {
         "url": "Immobilienportal",
         "name": "Immobilienportal",
         "link": "https://immobilien.smartcity.w-mi.de",
@@ -57,12 +63,6 @@
         "url": "Mobilitaetshub",
         "name": "Mobilitätshub",
         "link": "https://mobilitaet.smartcity.w-mi.de",
-        "disabled": true
-    },
-    {
-        "url": "Polizei",
-        "name": "Polizei",
-        "link": "https://polizei.smartcity.w-mi.de",
         "disabled": true
     }
 ]
