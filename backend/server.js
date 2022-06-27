@@ -85,7 +85,11 @@ app.post('/api/register', async (req, res) => {
         const refreshToken = getRefreshToken(req.body.email)
         const data = { accessToken: accessToken, refreshToken: refreshToken };
 
+        try {
         amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_REGISTER, Buffer.from(JSON.stringify(data))); 
+        } catch (error) {
+            console.log(error)
+        }
         res.json(data)
     });
 })
@@ -108,7 +112,12 @@ app.post('/api/login', async (req, res) => {
                 const accessToken = getAccessToken(userResult.email)
                 const refreshToken = getRefreshToken(userResult.email)
                 const data = { accessToken: accessToken, refreshToken: refreshToken };
-                amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGIN, Buffer.from(JSON.stringify(data))); 
+                try {
+                    amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGIN, Buffer.from(JSON.stringify(data))); 
+                } catch (error) {
+                    console.log(error)
+                }
+                
                 res.json(data)
             }else{
                 res.status(400).send({errMsg: constants.ERR_INVALID_PASSWORD})
@@ -144,7 +153,11 @@ app.delete('/api/logout', (req, res) => {
             return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
         }
         const data = {msg: "logout"};
+        try {
         amqpChannel.publish(config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_LOGOUT, Buffer.from(JSON.stringify(data))); 
+        } catch (error) {
+            console.log(error)
+        }
         res.json(data).status(204)
     })
 })
@@ -156,10 +169,11 @@ app.post('/api/token', (req, res) => {
 
     const sql = "SELECT * FROM RefreshToken WHERE token = ?";
     pool.query(sql, values, function (err, result) {
-        if (err)
+        if (err) {
             return res.status(500).send({errMsg: 'Unerwarteter Server Error!'});
+        }
         if (result.length <= 0)
-            return res.status(500).send({errMsg: 'Invalid RefreshToken!'});
+            return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN});
 
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, email) => {
             if(err) return res.status(403).send({errMsg: constants.ERR_INVALID_TOKEN})
@@ -202,16 +216,21 @@ const validateSchema = Joi.object({
 
 
 amqp.connect(`amqp://${config.RABBIT_MQ_USER}:${config.RABBIT_MQ_PASSWORD}@${config.RABBIT_MQ_DOMAIN}:${config.RABBIT_MQ_PORT}`, function(error0, connection) {
-    if(error0) throw error0;
+    if(error0) {
+        console.log(error0)
+        return}
     amqpConn = connection 
 
     connection.createChannel(function(error1, channel) { 
-        if(error1) throw error1;
+        if(error1) {
+            console.log(error1)
+            return}
         channel.assertExchange(config.RABBIT_MQ_EXCHANGENAME, "topic", {durable: true}); 
         amqpChannel = channel 
 
         channel.assertQueue("", { exclusive: true }, (error2, queueInstance) => {
-            if(error2) throw error2;
+            if(error2) {console.log(error2)
+                return};
 
             channel.bindQueue(queueInstance.queue, config.RABBIT_MQ_EXCHANGENAME, config.RABBIT_MQ_ROUTINGKEY_HELLO);
 
